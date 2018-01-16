@@ -40,3 +40,13 @@ Running in Apollo launchpad:
 2.3 [Trello REST wrapper](https://launchpad.graphql.com/9jl8jr7v4r)
 
 2.4 [Local server](./server/README.md) as a trello-rest wrapper/proxy
+
+## Hands-on application building with GraphQL and React
+
+Publish by [Packt](https://www.packtpub.com/).
+
+Author: Robert Hostlowsky [@rhosts](https://www.twitter.com/rhosts)
+
+This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+
+Find some information on how to perform common task in the most recent version of this guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
