@@ -1,18 +1,37 @@
+/* eslint-disable react/prop-types,react/jsx-key */
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import { BoardContainer, List } from './components';
+
+import boardData from './dummyData';
+
+const renderLists = (lists = []) => {
+  return lists.map(list => (
+    <List
+      name={list.name}
+      cards={list.cards}
+      key={list.id || list.name}
+    />
+  ));
+};
+
+class Board extends Component {
+  render() {
+    const { data = {} } = this.props;
+    const { name, lists } = data;
+    return (
+      <BoardContainer boardName={name}>
+        {renderLists(lists)}
+      </BoardContainer>
+    );
+  }
+}
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Board data={boardData} />
       </div>
     );
   }
