@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types,react/jsx-key */
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 
 import { ApolloClient } from 'apollo-client';
@@ -16,13 +16,14 @@ import './App.css';
 
 import { BoardContainer } from './components';
 import { CardList } from './components/CardList';
-// import { Card } from './components/Card';
 
 const Board = ({ board }) => {
   const { name, lists = [] } = board;
   return (
     <BoardContainer boardName={name}>
-      {lists.map(list => <CardList cards={list.cards} name={list.name}/>)}
+      {lists.map(list => (
+        <CardList key={list.id} cards={list.cards} name={list.name} />
+      ))}
     </BoardContainer>
   );
 };
@@ -52,19 +53,13 @@ const BoardQuery = gql`
     board: Board(id: "cjc10rgoj721s0147ui3wzapk") {
       name
       lists {
-        name
-        cards {
-          name
-          id
-        }
+        id
+        ...CardList_list
       }
     }
   }
+  ${CardList.fragments.list}
 `;
-/*
-...CardList_list
-${CardList.fragments.list}
-*/
 
 const CoolBoard = graphql(BoardQuery)(BoardAdapter);
 

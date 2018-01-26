@@ -36,7 +36,7 @@ const CardsContainer = ({ children }) => (
   </div>
 );
 
-let renderCards = (cards = []) => cards.map(c => <Card {...c} />);
+let renderCards = (cards = []) => cards.map(c => <Card key={c.id} {...c} />);
 
 const ListContainer = ({ children }) => (
   <div
@@ -63,11 +63,10 @@ CardList.fragments = {
     fragment CardList_list on List {
       name
       cards {
-        name
+        id
+        ...Card_card
       }
-      #cards {
-      #  ...Card_card
-      #}
     }
+    ${Card.fragments.card}
   `,
 };
