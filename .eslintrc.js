@@ -12,6 +12,8 @@ module.exports = {
   rules: {
     // already defined with prettier:
     'prettier/prettier': ['warn'],
+    'no-unused-vars': [1],
+    'no-console': ['off'],
     indent: ['off', 2],
     quotes: ['off', 'single'],
     semi: ['off', 'always'],

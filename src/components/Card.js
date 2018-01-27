@@ -11,8 +11,9 @@ export const CardComponent = styled.div`
   padding: 10px;
 `;
 
-
-export const Card = ({ name }) => <CardComponent>{name}</CardComponent>;
+export const Card = ({ name }) => (
+  <CardComponent>{name}</CardComponent>
+);
 
 Card.propTypes = {
   name: PropTypes.string.isRequired,
