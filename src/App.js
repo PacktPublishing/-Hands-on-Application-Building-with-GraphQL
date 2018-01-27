@@ -5,6 +5,7 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 import { SchemaLink } from 'apollo-link-schema';
+import { createHttpLink } from 'apollo-link-http';
 
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -49,8 +50,8 @@ const BoardAdapter = ({ data }) => {
 };
 
 const BoardQuery = gql`
-  query {
-    board: Board(id: "cjc10rgoj721s0147ui3wzapk") {
+  query board($boardId: ID) {
+    board: Board(id: $boardId) {
       name
       lists {
         id
@@ -61,9 +62,25 @@ const BoardQuery = gql`
   ${CardList.fragments.list}
 `;
 
-const CoolBoard = graphql(BoardQuery)(BoardAdapter);
+const config = {
+  options: props => ({
+    variables: {
+      boardId: props.boardId,
+    },
+  }),
+};
+const CoolBoard = graphql(BoardQuery, config)(BoardAdapter);
 
 function createClient() {
+  return new ApolloClient({
+    link: createHttpLink({
+      uri: 'https://api.graph.cool/simple/v1/cjc10hp730o6u01143mnnalq4',
+    }),
+    cache: new InMemoryCache(),
+  });
+}
+
+function createClientMock() {
   return new ApolloClient({
     link: new SchemaLink({ schema }),
     cache: new InMemoryCache(),
@@ -75,7 +92,7 @@ class App extends Component {
     return (
       <div className="App">
         <ApolloProvider client={createClient()}>
-          <CoolBoard />
+          <CoolBoard boardId="cjc10rgoj721s0147ui3wzapk" />
         </ApolloProvider>
       </div>
     );
