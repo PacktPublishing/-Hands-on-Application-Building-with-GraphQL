@@ -17,6 +17,7 @@ const Board = ({
   addListMutation,
   addCard,
   deleteAllLists,
+  moveCard = () => {},
   boardId,
 }) => {
   const { loading, error, board } = data;
@@ -36,6 +37,32 @@ const Board = ({
   if (board) {
     const { name, lists = [] } = board;
 
+    const onMoveCardToList = (
+      cardId,
+      oldCardListId,
+      newCardListId
+    ) => {
+      console.log(
+        `triggered moving card with id: ${cardId} to list with id: ${oldCardListId} -> id: ${newCardListId}`
+      );
+
+      moveCard({
+        variables: {
+          oldCardListId,
+          cardListId: newCardListId,
+          cardId,
+        },
+      })
+        .then(({ data }) => {
+          console.log('got data', data);
+        })
+        .catch(error => {
+          console.log(
+            'there was an error sending the query',
+            error
+          );
+        });
+    };
     const onCardListAddItem = cardListId => {
       console.log(
         `triggered adding item to list with id: ${cardListId}`
@@ -63,7 +90,6 @@ const Board = ({
       );
 
       addListMutation({
-        // refetchQueries: [{ query: BoardQuery, variables: { boardId } }],
         variables: {
           boardId,
           name: 'Section 4',
@@ -91,6 +117,7 @@ const Board = ({
             cards={list.cards}
             name={list.name}
             id={list.id}
+            moveCardToList={onMoveCardToList}
             addCardWithName={onCardListAddItem}
           />
         ))}
@@ -171,6 +198,34 @@ let AddListMutation = gql`
   }
   ${CardList.fragments.list}
 `;
+let moveCard = graphql(
+  gql`
+    mutation moveCard(
+      $cardId: ID!
+      $oldCardListId: ID!
+      $cardListId: ID!
+    ) {
+      newList: updateList(
+        data: { cards: { connect: { id: $cardId } } }
+        where: { id: $cardListId }
+      ) {
+        ...CardList_list
+      }
+      oldList: updateList(
+        data: {
+          cards: { disconnect: { id: $cardId } }
+        }
+        where: { id: $oldCardListId }
+      ) {
+        ...CardList_list
+      }
+    }
+    ${CardList.fragments.list}
+  `,
+  {
+    name: 'moveCard',
+  }
+);
 
 let deleteAllLists = graphql(
   gql`
@@ -183,9 +238,9 @@ let deleteAllLists = graphql(
   {
     name: 'deleteManyLists',
     props: ({
-              deleteManyLists,
-              ownProps: { boardId },
-            }) => ({
+      deleteManyLists,
+      ownProps: { boardId },
+    }) => ({
       deleteAllLists: () => {
         deleteManyLists({
           update: (cache, obj) => {
@@ -217,5 +272,6 @@ export const CoolBoard = compose(
     name: 'addListMutation',
   }),
   addCard,
+  moveCard,
   graphql(BoardQuery, queryConfig)
 )(Board);

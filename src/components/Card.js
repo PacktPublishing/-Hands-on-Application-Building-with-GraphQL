@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
@@ -13,6 +13,9 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { compose } from 'react-apollo';
 
+import { ItemTypes } from './Constants';
+import { DragSource } from 'react-dnd';
+
 const CardDiv = styled.div`
   border-radius: 3px;
   margin: 0.1em 0 0 0;
@@ -21,7 +24,7 @@ const CardDiv = styled.div`
   padding: 10px;
 `;
 
-class CardComponent extends React.Component {
+export class CardComponent extends React.Component {
   constructor(props) {
     super();
     this.state = {
@@ -93,6 +96,13 @@ class CardComponent extends React.Component {
       showModal = false,
     } = this.state;
 
+    const whenDraggingStyle = {
+      color: 'black',
+      fontWeight: 'bold',
+      fontStyle: 'italic',
+    };
+    const { isDragging } = this.props;
+
     return (
       <CardDiv onClick={() => this.showAndReset()}>
         <Modal open={showModal} onClose={this.hide}>
@@ -143,7 +153,10 @@ class CardComponent extends React.Component {
             </Button>
           </Modal.Actions>
         </Modal>
-        {this.props.name}
+        <span
+          style={isDragging ? whenDraggingStyle : {}}>
+          {name}
+        </span>
       </CardDiv>
     );
   }
@@ -151,6 +164,7 @@ class CardComponent extends React.Component {
 
 CardComponent.propTypes = {
   id: PropTypes.string.isRequired,
+  cardListId: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   storeCard: PropTypes.func,
@@ -197,3 +211,45 @@ export const Card = compose(
     }),
   })
 )(CardComponent);
+
+class CardForDragging extends Component {
+  render() {
+    const { connectDragSource } = this.props;
+    return connectDragSource(
+      <div>
+        <Card {...this.props} />
+      </div>
+    );
+  }
+}
+
+CardForDragging.propTypes = {
+  connectDragSource: PropTypes.func.isRequired,
+  isDragging: PropTypes.bool.isRequired,
+  ...CardComponent.propTypes,
+};
+
+CardForDragging.fragments = {
+  ...CardComponent.fragments,
+};
+
+const cardSource = {
+  // the only important info:
+  beginDrag: (props, monitor, component) => ({
+    id: props.id,
+    cardListId: props.cardListId, // for canDrag
+  }),
+  // only can be dragged to a different list
+  canDrag: (props, monitor) => !!props.cardListId,
+};
+
+const collect = (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging(),
+});
+
+export default DragSource(
+  ItemTypes.CARD,
+  cardSource,
+  collect
+)(CardForDragging);

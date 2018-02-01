@@ -8,33 +8,44 @@ import {
   Icon,
 } from 'semantic-ui-react';
 
-export const BoardContainer = ({
-  boardName,
-  children,
-}) => (
-  <Container
-    fluid
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      flexGrow: 1,
-    }}>
-    <Header textAlign="center" as="h1">
-      Board: {boardName}
-    </Header>
-    <div
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
+class BoardContainerInner extends React.Component {
+  render() {
+    const { boardName, children } = this.props;
+
+    return (
+    <Container
+      fluid
       style={{
-        textAlign: 'left',
-        backgroundColor: 'blue',
-        padding: '1em',
         display: 'flex',
-        flex: 1,
-        overflow: 'auto',
+        flexDirection: 'column',
+        flexGrow: 1,
       }}>
-      {children}
-    </div>
-  </Container>
-);
+      <Header textAlign="center" as="h1">
+        Board: {boardName}
+      </Header>
+      <div
+        style={{
+          textAlign: 'left',
+          backgroundColor: 'blue',
+          padding: '1em',
+          display: 'flex',
+          flex: 1,
+          overflow: 'auto',
+        }}>
+        {children}
+      </div>
+    </Container>
+    );
+  }
+}
+
+export const BoardContainer = DragDropContext(
+  HTML5Backend
+)(BoardContainerInner);
+
 BoardContainer.propTypes = {
   boardName: PropTypes.string.isRequired,
   children: PropTypes.array.isRequired,

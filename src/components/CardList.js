@@ -1,4 +1,5 @@
 import React from 'react';
+import { DropTarget } from 'react-dnd';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import {
@@ -7,11 +8,14 @@ import {
   Icon,
 } from 'semantic-ui-react';
 
-import { Card } from './Card';
+import Card from './Card';
+import { ItemTypes } from './Constants';
 
-export class CardList extends React.Component {
+class CardListWithoutDnd extends React.Component {
   render() {
     const {
+      connectDropTarget,
+      isOver,
       cards,
       name,
       id,
@@ -19,24 +23,75 @@ export class CardList extends React.Component {
     } = this.props;
 
     return (
-      <ListContainer>
-        <CardListHeader name={name} />
+      <div>
+        {connectDropTarget(
+          <div>
+            <ListContainer
+              style={{
+                backgroundColor: isOver
+                  ? 'yellow'
+                  : 'lightgrey',
+              }}>
+              <CardListHeader name={name} />
 
-        <InnerScrollContainer>
-          <CardsContainer>
-            {cards.map(c => (
-              <Card key={c.id} {...c} />
-            ))}
-          </CardsContainer>
-        </InnerScrollContainer>
-
-        <AddCardButton
-          onAddCard={() => addCardWithName(id)}
-        />
-      </ListContainer>
+              <InnerScrollContainer>
+                <CardsContainer>
+                  {cards.map(c => (
+                    <Card
+                      key={c.id}
+                      {...c}
+                      cardListId={id}
+                    />
+                  ))}
+                </CardsContainer>
+              </InnerScrollContainer>
+              <AddCardButton
+                onAddCard={() => addCardWithName(id)}
+              />
+            </ListContainer>
+          </div>
+        )}
+      </div>
     );
   }
 }
+
+const dropTarget = {
+  drop(props, monitor, component) {
+    console.log(
+      'dropped: ',
+      props,
+      monitor,
+      component
+    );
+    let cardItem = monitor.getItem();
+    const cardId = cardItem.id;
+    const cardListId = props.id;
+    const oldCardListId = cardItem.cardListId;
+    props.moveCardToList(
+      cardId,
+      oldCardListId,
+      cardListId
+    );
+  },
+  hover(props, monitor) {},
+  canDrop(props, monitor) {
+    let item = monitor.getItem();
+    let can = !(props.id === item.cardListId);
+    return can;
+  },
+};
+
+const collect = (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+});
+
+export const CardList = DropTarget(
+  ItemTypes.CARD,
+  dropTarget,
+  collect
+)(CardListWithoutDnd);
 
 const CardListHeader = ({ name }) => (
   <Header
@@ -56,6 +111,7 @@ const InnerScrollContainer = ({ children }) => {
       style={{
         flexShrink: 1,
         flexGrow: 0,
+        minHeight: '2em',
         overflow: 'auto',
       }}>
       {children}
@@ -74,7 +130,7 @@ const CardsContainer = ({ children }) => (
   </div>
 );
 
-const ListContainer = ({ children }) => (
+const ListContainer = ({ children, style }) => (
   <div
     style={{
       backgroundColor: 'lightgrey',
@@ -86,6 +142,7 @@ const ListContainer = ({ children }) => (
       flexGrow: 0,
       flexDirection: 'column',
       display: 'flex',
+      ...style,
     }}>
     {children}
   </div>
@@ -109,6 +166,7 @@ CardList.propTypes = {
   name: PropTypes.string.isRequired,
   id: PropTypes.string,
   addCardWithName: PropTypes.func,
+  moveCardToList: PropTypes.func,
   cards: PropTypes.array,
 };
 
