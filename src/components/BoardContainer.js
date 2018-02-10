@@ -68,7 +68,7 @@ export const DelListButton = ({ action, children }) => (
 
 DelListButton.propTypes = {
   onAddNewList: PropTypes.func,
-  children: PropTypes.array.isRequired,
+  children: PropTypes.oneOfType([PropTypes.array, PropTypes.string]).isRequired,
 };
 AddListButton.propTypes = {
   onAddNewList: PropTypes.func,
