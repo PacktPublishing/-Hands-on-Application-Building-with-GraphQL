@@ -138,49 +138,11 @@ let AddCardMutation = gql`
   ${CardList.fragments.list}
 `;
 
-let optimisticResponse = {
-  __typename: 'Mutation',
-  updateList: {
-    id: 'update-with-real-id',
-    name: 'optimistic',
-    cards: [
-      {
-        id: 'cjd7corei01980176im02xvpf',
-        name: 'optimistic',
-        __typename: 'Card',
-      },
-      {
-        id: 'cjd7ct108019i0176jbd4dznp',
-        name: 'optimistic',
-        __typename: 'Card',
-      },
-      {
-        id: 'cjd7ct108019i0176jbd4dzn1',
-        name: 'optimistic',
-        __typename: 'Card',
-      },
-      {
-        id: 'cjd7ct108019i0176jbd4dzn2',
-        name: 'optimistic',
-        __typename: 'Card',
-      },
-      {
-        id: 'cjd7ct108019i0176jbd4dzn3',
-        name: 'optimistic',
-        __typename: 'Card',
-      },
-    ],
-    __typename: 'List',
-  },
-};
-
 let addCard = graphql(AddCardMutation, {
   name: 'addCardMutation',
   props: ({ addCardMutation }) => ({
     addCard: ({ name, cardListId }) => {
-      optimisticResponse.updateList.id = cardListId;
       return addCardMutation({
-        optimisticResponse: optimisticResponse,
         variables: {
           cardListId,
           name,
@@ -210,15 +172,6 @@ let AddListMutation = gql`
   ${CardList.fragments.list}
 `;
 
-export const CoolBoard = compose(
-  deleteAllLists,
-  graphql(AddListMutation, {
-    name: 'addListMutation',
-  }),
-  addCard,
-  graphql(BoardQuery, queryConfig)
-)(Board);
-
 let deleteAllLists = graphql(
   gql`
     mutation {
@@ -236,7 +189,6 @@ let deleteAllLists = graphql(
       deleteAllLists: () => {
         deleteManyLists({
           update: (cache, obj) => {
-            /* const { data: { deleteManyLists: { count } }, } = obj; */
             const data = cache.readQuery({
               query: BoardQuery,
               variables: {
@@ -252,17 +204,18 @@ let deleteAllLists = graphql(
               data,
             });
           },
-          XrefetchQueries: [
-            {
-              query: BoardQuery,
-              variables: {
-                boardId,
-              },
-            },
-          ],
         });
       },
       name: 'deleteManyLists',
     }),
   }
 );
+
+export const CoolBoard = compose(
+  deleteAllLists,
+  graphql(AddListMutation, {
+    name: 'addListMutation',
+  }),
+  addCard,
+  graphql(BoardQuery, queryConfig)
+)(Board);
