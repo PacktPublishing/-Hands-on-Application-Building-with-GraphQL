@@ -41,6 +41,16 @@ export class CardComponent extends React.Component {
     });
   }
 
+  componentWillReceiveProps(newProps, a, b) {
+    console.log('componentWillReceiveProps()', newProps,a,b);
+    if( !this.state.showModal) {
+      this.setState({
+        name: newProps.name,
+        description: newProps.description,
+      });
+    }
+  }
+
   showAndReset = () => {
     this.setState({ showModal: true });
     this.resetForm();

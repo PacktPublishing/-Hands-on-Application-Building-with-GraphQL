@@ -11,15 +11,17 @@ import {
   DelListButton,
 } from './BoardContainer';
 import { CardList } from './CardList';
+import Card from './Card';
 
 class Board extends React.Component {
   render() {
     const {
       boardQuery = {},
       addListMutation,
+      deleteCardList,
       addCard,
       deleteAllLists,
-      moveCard = () => {},
+      moveCard,
       boardId,
     } = this.props;
     const { loading, error, board } = boardQuery;
@@ -73,6 +75,7 @@ class Board extends React.Component {
             );
           });
       };
+
       const onCardListAddItem = cardListId => {
         console.log(
           `triggered adding item to list with id: ${cardListId}`
@@ -81,7 +84,23 @@ class Board extends React.Component {
         addCard({
           boardId,
           cardListId,
-          name: 'New-Card',
+          name: 'Card',
+        })
+          .then(({ data }) => {
+            console.log('got data', data);
+          })
+          .catch(error => {
+            console.log(
+              'there was an error sending the query',
+              error
+            );
+          });
+      };
+      const onDeleteCardList = cardListId => {
+        deleteCardList({
+          variables: {
+            cardListId,
+          },
         })
           .then(({ data }) => {
             console.log('got data', data);
@@ -102,7 +121,7 @@ class Board extends React.Component {
         addListMutation({
           variables: {
             boardId,
-            name: 'Section 4',
+            name: 'Section 5',
           },
         })
           .then(({ data }) => {
@@ -118,7 +137,10 @@ class Board extends React.Component {
 
       return (
         <BoardContainer boardName={name}>
-          <DelListButton action={deleteAllLists}>
+          <DelListButton
+            action={() =>
+              deleteAllLists(boardId, lists)
+            }>
             Delete All
           </DelListButton>
           {lists.map(list => (
@@ -128,6 +150,7 @@ class Board extends React.Component {
               name={list.name}
               id={list.id}
               moveCardToList={onMoveCardToList}
+              deleteListWithId={onDeleteCardList}
               addCardWithName={onCardListAddItem}
             />
           ))}
@@ -141,24 +164,76 @@ class Board extends React.Component {
     return <div>Board does not exist.</div>;
   }
 
-  componentWillMount(nextProps, other) {
+  componentWillMount() {
     const { boardId, boardQuery } = this.props;
 
-    subscribeToBoardUpdates(
-      { boardId: boardId },
-      this.props
-    );
+    // for edit-board or  add-cardlist = board update
+    boardQuery.subscribeToMore({
+      document: BoardSubscription,
+      variables: {
+        boardId: boardId,
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        console.log(
+          'update:',
+          subscriptionData.data.board
+        );
+      },
+    });
+
+    // for add-card = list update
+    boardQuery.subscribeToMore({
+      document: ListsSubscription,
+      updateQuery: (prev, { subscriptionData }) => {
+        console.log(
+          'update:',
+          subscriptionData.data.list
+        );
+        if (!subscriptionData.data) {
+          return prev;
+        }
+        const { list } = subscriptionData.data;
+
+        /* Deleting "leaf" without any board-change-update
+         * Update local cache, by updating board locally
+         */
+        if ('DELETED' === list.mutation) {
+          const oldList = prev.board.lists;
+          const lists = [];
+
+          // filter-out specific cardList
+          oldList.forEach(cardList => {
+            if (cardList.id !== list.previousValues.id)
+              lists.push(cardList);
+          });
+
+          const newBoard = {
+            ...prev.board,
+            lists,
+          };
+
+          return {
+            ...prev,
+            board: newBoard,
+          };
+        }
+
+        return prev;
+      },
+    });
+
+    // for edit-card = card update
+    boardQuery.subscribeToMore({
+      document: CardsSubscription,
+      updateQuery: (prev, { subscriptionData }) => {
+        console.log(
+          'update:',
+          subscriptionData.data.card
+        );
+      },
+    });
   }
 }
-
-const subscribeToBoardUpdates = (params, props) => {
-  props.boardQuery.subscribeToMore({
-    document: BoardSubscription,
-    variables: {
-      boardId: params.boardId,
-    },
-  });
-};
 
 Board.fragments = {
   board: gql`
@@ -173,9 +248,42 @@ Board.fragments = {
   `,
 };
 
+const CardsSubscription = gql`
+  subscription {
+    card(where: {}) {
+      mutation
+      node {
+        ...Card_card
+      }
+      previousValues {
+        id
+        name
+      }
+      updatedFields
+    }
+  }
+  ${Card.fragments.card}
+`;
+
+const ListsSubscription = gql`
+  subscription {
+    list(where: {}) {
+      mutation
+      previousValues {
+        id
+        name
+      }
+      node {
+        ...CardList_list
+      }
+    }
+  }
+  ${CardList.fragments.list}
+`;
+
 const BoardSubscription = gql`
-  subscription boardChanges($boardId: ID) {
-    board(where: { node: {id: $boardId} }) {
+  subscription($boardId: ID) {
+    board(where: { node: { id: $boardId } }) {
       mutation
       node {
         ...Board_board
@@ -199,59 +307,45 @@ const BoardQuery = gql`
   ${Board.fragments.board}
 `;
 
-const queryConfig = {
-  options: props => ({
+const boardQueryConfig = {
+  options: ({ boardId }) => ({
     variables: {
-      boardId: props.boardId,
+      boardId,
     },
   }),
   name: 'boardQuery',
 };
 
-let AddCardMutation = gql`
-  mutation AddCardMutation(
-    $cardListId: ID!
-    $name: String!
-  ) {
-    updateList(
-      data: { cards: { create: { name: $name } } }
-      where: { id: $cardListId }
+let addCard = graphql(
+  gql`
+    mutation AddCardMutation(
+      $cardListId: ID!
+      $name: String!
     ) {
-      ...CardList_list
+      updateList(
+        data: { cards: { create: { name: $name } } }
+        where: { id: $cardListId }
+      ) {
+        ...CardList_list
+      }
     }
+    ${CardList.fragments.list}
+  `,
+  {
+    name: 'addCardMutation',
+    props: ({ addCardMutation }) => ({
+      addCard: ({ name, cardListId }) => {
+        return addCardMutation({
+          variables: {
+            cardListId,
+            name,
+          },
+        });
+      },
+    }),
   }
-  ${CardList.fragments.list}
-`;
+);
 
-let addCard = graphql(AddCardMutation, {
-  name: 'addCardMutation',
-  props: ({ addCardMutation }) => ({
-    addCard: ({ name, cardListId }) => {
-      return addCardMutation({
-        variables: {
-          cardListId,
-          name,
-        },
-      });
-    },
-  }),
-});
-
-let AddListMutation = gql`
-  mutation AddListMutation(
-    $boardId: ID!
-    $name: String!
-  ) {
-    updateBoard(
-      data: { lists: { create: { name: $name } } }
-      where: { id: $boardId }
-    ) {
-      # used as a result in the mutation-action promise ...
-      ...Board_board
-    }
-  }
-  ${Board.fragments.board}
-`;
 let moveCard = graphql(
   gql`
     mutation moveCard(
@@ -281,51 +375,72 @@ let moveCard = graphql(
   }
 );
 
+const addListMutation = graphql(
+  gql`
+    mutation($boardId: ID!, $name: String!) {
+      updateBoard(
+        data: { lists: { create: { name: $name } } }
+        where: { id: $boardId }
+      ) {
+        # used as a result in the mutation-action promise ...
+        id #...Board_board
+      }
+    }
+  `,
+  {
+    name: 'addListMutation',
+  }
+);
+
 let deleteAllLists = graphql(
   gql`
-    mutation {
-      deleteManyLists(where: {}) {
-        count
+    mutation deletelistsOfBoard(
+      $boardId: ID!
+      $listIds: [ListWhereUniqueInput!]!
+    ) {
+      updateBoard(
+        data: { lists: { delete: $listIds } }
+        where: { id: $boardId }
+      ) {
+        id #...Board_board
       }
     }
   `,
   {
     name: 'deleteManyLists',
-    props: ({
-      deleteManyLists,
-      ownProps: { boardId },
-    }) => ({
-      deleteAllLists: () => {
+    props: ({ deleteManyLists }) => ({
+      deleteAllLists: (boardId, listIds) => {
         deleteManyLists({
-          update: (cache, obj) => {
-            const data = cache.readQuery({
-              query: BoardQuery,
-              variables: {
-                boardId: boardId,
-              },
-            });
-            data.board.lists = [];
-            cache.writeQuery({
-              query: BoardQuery,
-              variables: {
-                boardId: boardId,
-              },
-              data,
-            });
+          variables: {
+            boardId: boardId,
+            listIds:
+              listIds.map(li => ({ id: li.id })) || [],
           },
         });
       },
-      name: 'deleteManyLists',
     }),
+  }
+);
+
+let deleteCardList = graphql(
+  gql`
+    mutation deletelist($cardListId: ID!) {
+      # minimum data transfer:
+      deleteList(where: { id: $cardListId }) {
+        id
+      }
+    }
+  `,
+  {
+    name: 'deleteCardList',
   }
 );
 
 export const CoolBoard = compose(
   deleteAllLists,
-  graphql(AddListMutation, {
-    name: 'addListMutation',
-  }),
+  addListMutation,
+  deleteCardList,
   addCard,
   moveCard,
-  graphql(BoardQuery, queryConfig)
+  graphql(BoardQuery, boardQueryConfig)
 )(Board);

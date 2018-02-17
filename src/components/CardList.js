@@ -6,6 +6,7 @@ import {
   Button,
   Header,
   Icon,
+  Popup,
 } from 'semantic-ui-react';
 
 import Card from './Card';
@@ -20,6 +21,7 @@ class CardListWithoutDnd extends React.Component {
       name,
       id,
       addCardWithName = () => {},
+      deleteListWithId = () => {},
     } = this.props;
 
     return (
@@ -32,7 +34,11 @@ class CardListWithoutDnd extends React.Component {
                   ? 'yellow'
                   : 'lightgrey',
               }}>
-              <CardListHeader name={name} />
+              <CardListHeader name={name}>
+                <CardListButton onButtonClick={() => deleteListWithId(id)}>
+                  <Icon name="trash" />
+                </CardListButton>
+              </CardListHeader>
 
               <InnerScrollContainer>
                 <CardsContainer>
@@ -45,9 +51,10 @@ class CardListWithoutDnd extends React.Component {
                   ))}
                 </CardsContainer>
               </InnerScrollContainer>
-              <AddCardButton
-                onAddCard={() => addCardWithName(id)}
-              />
+              <CardListButton onButtonClick={() => addCardWithName(id)}>
+                <Icon name="plus" />
+                Add a card
+              </CardListButton>
             </ListContainer>
           </div>
         )}
@@ -93,16 +100,35 @@ export const CardList = DropTarget(
   collect
 )(CardListWithoutDnd);
 
-const CardListHeader = ({ name }) => (
-  <Header
-    textAlign="center"
+const CardListHeader = ({ name, children }) => (
+  <div
     style={{
-      padding: '0.4em 1em',
-      flex: 0,
-      marginBottom: 0, // reduce semantic-ui's bottom border
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: '0.4em 0',
     }}>
-    {name}
-  </Header>
+    <Header
+      textAlign="center"
+      style={{
+        flexGrow: 1,
+        marginBottom: 0, // reduce semantic-ui's bottom border
+      }}>
+      {name}
+    </Header>
+    <Popup
+      trigger={
+        <Button
+          style={{ flexGrow: 0 }}
+          icon="ellipsis vertical"
+          size="mini"
+        />
+      }
+      on="click"
+      basic>
+      {children}
+    </Popup>
+  </div>
 );
 
 const InnerScrollContainer = ({ children }) => {
@@ -111,7 +137,6 @@ const InnerScrollContainer = ({ children }) => {
       style={{
         flexShrink: 1,
         flexGrow: 0,
-        minHeight: '2em',
         overflow: 'auto',
       }}>
       {children}
@@ -148,17 +173,16 @@ const ListContainer = ({ children, style }) => (
   </div>
 );
 
-const AddCardButton = ({ onAddCard }) => (
+const CardListButton = ({ onButtonClick, children }) => (
   <Button
     compact
-    onClick={() => onAddCard()}
+    onClick={() => onButtonClick()}
     style={{
       margin: '0.1em 0 0 0',
       borderBottom: '1px solid #ccc',
       backgroundColor: '#grey',
     }}>
-    <Icon name="plus" />
-    Add a card
+    {children}
   </Button>
 );
 
@@ -166,6 +190,7 @@ CardList.propTypes = {
   name: PropTypes.string.isRequired,
   id: PropTypes.string,
   addCardWithName: PropTypes.func,
+  deleteListWithId: PropTypes.func,
   moveCardToList: PropTypes.func,
   cards: PropTypes.array,
 };
@@ -176,7 +201,6 @@ CardList.fragments = {
       name
       id
       cards {
-        id
         ...Card_card
       }
     }
