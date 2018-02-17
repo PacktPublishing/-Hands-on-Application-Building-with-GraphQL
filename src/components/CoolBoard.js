@@ -12,134 +12,191 @@ import {
 } from './BoardContainer';
 import { CardList } from './CardList';
 
-const Board = ({
-  data,
-  addListMutation,
-  addCard,
-  deleteAllLists,
-  moveCard = () => {},
-  boardId,
-}) => {
-  const { loading, error, board } = data;
+class Board extends React.Component {
+  render() {
+    const {
+      boardQuery = {},
+      addListMutation,
+      addCard,
+      deleteAllLists,
+      moveCard = () => {},
+      boardId,
+    } = this.props;
+    const { loading, error, board } = boardQuery;
 
-  if (loading) {
-    return <div>Loading Board</div>;
-  }
-  if (error) {
-    return (
-      <h2>
-        Sorry, some error:
-        <span>{error.message}</span>
-      </h2>
-    );
-  }
+    if (loading) {
+      return <div>Loading Board</div>;
+    }
 
-  if (board) {
-    const { name, lists = [] } = board;
+    if (error) {
+      if (error.graphQLErrors[0]) {
+        return (
+          <div>
+            <h2>GraphQL server error:</h2>
+            <p>
+              <strong>Details: </strong>
+              {error.graphQLErrors[0].message}
+            </p>
+          </div>
+        );
+      }
 
-    const onMoveCardToList = (
-      cardId,
-      oldCardListId,
-      newCardListId
-    ) => {
-      console.log(
-        `triggered moving card with id: ${cardId} to list with id: ${oldCardListId} -> id: ${newCardListId}`
-      );
+      return <h2>{`Sorry, ${error.message}`}</h2>;
+    }
 
-      moveCard({
-        variables: {
-          oldCardListId,
-          cardListId: newCardListId,
-          cardId,
-        },
-      })
-        .then(({ data }) => {
-          console.log('got data', data);
+    if (board) {
+      const { name, lists = [] } = board;
+
+      const onMoveCardToList = (
+        cardId,
+        oldCardListId,
+        newCardListId
+      ) => {
+        console.log(
+          `triggered moving card with id: ${cardId} to list with id: ${oldCardListId} -> id: ${newCardListId}`
+        );
+
+        moveCard({
+          variables: {
+            oldCardListId,
+            cardListId: newCardListId,
+            cardId,
+          },
         })
-        .catch(error => {
-          console.log(
-            'there was an error sending the query',
-            error
-          );
-        });
-    };
-    const onCardListAddItem = cardListId => {
-      console.log(
-        `triggered adding item to list with id: ${cardListId}`
-      );
+          .then(({ data }) => {
+            console.log('got data', data);
+          })
+          .catch(error => {
+            console.log(
+              'there was an error sending the query',
+              error
+            );
+          });
+      };
+      const onCardListAddItem = cardListId => {
+        console.log(
+          `triggered adding item to list with id: ${cardListId}`
+        );
 
-      addCard({
-        boardId,
-        cardListId,
-        name: 'New-Card',
-      })
-        .then(({ data }) => {
-          console.log('got data', data);
-        })
-        .catch(error => {
-          console.log(
-            'there was an error sending the query',
-            error
-          );
-        });
-    };
-
-    const onBoardAddItem = () => {
-      console.log(
-        `triggered adding list to the board`
-      );
-
-      addListMutation({
-        variables: {
+        addCard({
           boardId,
-          name: 'Section 4',
-        },
-      })
-        .then(({ data }) => {
-          console.log('got data', data);
+          cardListId,
+          name: 'New-Card',
         })
-        .catch(error => {
-          console.log(
-            'there was an error sending the query',
-            error
-          );
-        });
-    };
+          .then(({ data }) => {
+            console.log('got data', data);
+          })
+          .catch(error => {
+            console.log(
+              'there was an error sending the query',
+              error
+            );
+          });
+      };
 
-    return (
-      <BoardContainer boardName={name}>
-        <DelListButton action={deleteAllLists}>
-          Delete All
-        </DelListButton>
-        {lists.map(list => (
-          <CardList
-            key={list.id}
-            cards={list.cards}
-            name={list.name}
-            id={list.id}
-            moveCardToList={onMoveCardToList}
-            addCardWithName={onCardListAddItem}
+      const onBoardAddItem = () => {
+        console.log(
+          `triggered adding list to the board`
+        );
+
+        addListMutation({
+          variables: {
+            boardId,
+            name: 'Section 4',
+          },
+        })
+          .then(({ data }) => {
+            console.log('got data', data);
+          })
+          .catch(error => {
+            console.log(
+              'there was an error sending the query',
+              error
+            );
+          });
+      };
+
+      return (
+        <BoardContainer boardName={name}>
+          <DelListButton action={deleteAllLists}>
+            Delete All
+          </DelListButton>
+          {lists.map(list => (
+            <CardList
+              key={list.id}
+              cards={list.cards}
+              name={list.name}
+              id={list.id}
+              moveCardToList={onMoveCardToList}
+              addCardWithName={onCardListAddItem}
+            />
+          ))}
+          <AddListButton
+            onAddNewList={onBoardAddItem}
           />
-        ))}
-        <AddListButton onAddNewList={onBoardAddItem} />
-      </BoardContainer>
-    );
+        </BoardContainer>
+      );
+    }
+
+    return <div>Board does not exist.</div>;
   }
 
-  return <div>Board does not exist.</div>;
+  componentWillMount(nextProps, other) {
+    const { boardId, boardQuery } = this.props;
+
+    subscribeToBoardUpdates(
+      { boardId: boardId },
+      this.props
+    );
+  }
+}
+
+const subscribeToBoardUpdates = (params, props) => {
+  props.boardQuery.subscribeToMore({
+    document: BoardSubscription,
+    variables: {
+      boardId: params.boardId,
+    },
+  });
 };
 
-const BoardQuery = gql`
-  query board($boardId: ID) {
-    board(where: { id: $boardId }) {
+Board.fragments = {
+  board: gql`
+    fragment Board_board on Board {
       name
       id
       lists {
         ...CardList_list
       }
     }
+    ${CardList.fragments.list}
+  `,
+};
+
+const BoardSubscription = gql`
+  subscription boardChanges($boardId: ID) {
+    board(where: { node: {id: $boardId} }) {
+      mutation
+      node {
+        ...Board_board
+      }
+      previousValues {
+        id
+        name
+      }
+      updatedFields
+    }
   }
-  ${CardList.fragments.list}
+  ${Board.fragments.board}
+`;
+
+const BoardQuery = gql`
+  query board($boardId: ID) {
+    board(where: { id: $boardId }) {
+      ...Board_board
+    }
+  }
+  ${Board.fragments.board}
 `;
 
 const queryConfig = {
@@ -148,6 +205,7 @@ const queryConfig = {
       boardId: props.boardId,
     },
   }),
+  name: 'boardQuery',
 };
 
 let AddCardMutation = gql`
@@ -189,14 +247,10 @@ let AddListMutation = gql`
       where: { id: $boardId }
     ) {
       # used as a result in the mutation-action promise ...
-      id
-      name
-      lists {
-        ...CardList_list
-      }
+      ...Board_board
     }
   }
-  ${CardList.fragments.list}
+  ${Board.fragments.board}
 `;
 let moveCard = graphql(
   gql`
