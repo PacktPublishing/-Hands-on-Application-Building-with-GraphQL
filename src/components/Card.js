@@ -24,6 +24,18 @@ const CardDiv = styled.div`
   padding: 10px;
 `;
 
+const ShowDiffWarning = ({
+  newValue,
+  currentValue,
+}) => (
+  <Message
+    warning
+    size="mini"
+    hidden={newValue === currentValue}>
+    <b>New:</b> {newValue}
+  </Message>
+);
+
 export class CardComponent extends React.Component {
   constructor(props) {
     super();
@@ -36,14 +48,25 @@ export class CardComponent extends React.Component {
 
   resetForm() {
     this.setState({
+      conflict: false,
+      error: false,
       name: this.props.name,
       description: this.props.description,
+      old_name: this.props.name,
+      old_description: this.props.description,
     });
   }
 
-  componentWillReceiveProps(newProps, a, b) {
-    console.log('componentWillReceiveProps()', newProps,a,b);
-    if( !this.state.showModal) {
+  componentWillReceiveProps(newProps) {
+    console.log(
+      'componentWillReceiveProps()',
+      newProps
+    );
+    if (this.state.showModal) {
+      this.setState({
+        conflict: { newProps },
+      });
+    } else {
       this.setState({
         name: newProps.name,
         description: newProps.description,
@@ -65,7 +88,12 @@ export class CardComponent extends React.Component {
         }),
     } = this.props;
 
-    const { name, description } = this.state;
+    const {
+      name,
+      description,
+      old_name,
+      old_description,
+    } = this.state;
 
     this.setLoading();
 
@@ -73,8 +101,17 @@ export class CardComponent extends React.Component {
       id,
       name,
       description,
+      old_name,
+      old_description,
     })
-      .then(() => {
+      .then(({ data }) => {
+        const { updateManyCards } = data;
+        const { count = 0 } = updateManyCards;
+        if (count == 0) {
+          throw new Error(
+            'No Card with old values found - may have been changed in the meantime!'
+          );
+        }
         this.setLoading(false);
         this.hide();
       })
@@ -101,6 +138,7 @@ export class CardComponent extends React.Component {
     const {
       loading = false,
       error = false,
+      conflict = false,
       name,
       description,
       showModal = false,
@@ -121,7 +159,12 @@ export class CardComponent extends React.Component {
             <Form
               onSubmit={() => this.saveAndHide()}
               error={!!error}
-              loading={loading}>
+              loading={loading}
+              warning={!!conflict}>
+              <Message
+                warning
+                header="Warning! Card was concurrently modified on server."
+              />
               <Message
                 error
                 header="Saving Card failed"
@@ -137,6 +180,10 @@ export class CardComponent extends React.Component {
                 onChange={this.handleChange}
                 required
               />
+              <ShowDiffWarning
+                newValue={this.props.name}
+                currentValue={name}
+              />
               <Form.TextArea
                 label="Task Description"
                 placeholder="Add some more details about this task ..."
@@ -144,17 +191,34 @@ export class CardComponent extends React.Component {
                 name="description"
                 onChange={this.handleChange}
               />
+              <ShowDiffWarning
+                newValue={this.props.description}
+                currentValue={description}
+              />
             </Form>
           </Modal.Content>
           <Modal.Actions>
-            <Button
-              color="green"
-              onClick={() => {
-                this.saveAndHide();
-              }}
-              inverted>
-              <Icon name="save" /> Save
-            </Button>
+            {!!conflict && (
+              <Button
+                color="green"
+                negative
+                onClick={() => {
+                  this.saveAndHide();
+                }}
+                inverted>
+                <Icon name="save" /> Overwrite
+              </Button>
+            )}
+            {!conflict && (
+              <Button
+                color="green"
+                onClick={() => {
+                  this.saveAndHide();
+                }}
+                inverted>
+                <Icon name="save" /> Save
+              </Button>
+            )}
             <Button
               color="red"
               onClick={this.hide}
@@ -165,7 +229,7 @@ export class CardComponent extends React.Component {
         </Modal>
         <span
           style={isDragging ? whenDraggingStyle : {}}>
-          {name}
+          {this.props.name}
         </span>
       </CardDiv>
     );
@@ -195,26 +259,38 @@ const EditCardMutation = gql`
     $id: ID!
     $name: String
     $description: String
+    $old_name: String
+    $old_description: String
   ) {
-    updateCard(
+    updateManyCards(
+      where: {
+        AND: [ { id: $id } { name: $old_name }
+          { description: $old_description } ]
+      }
       data: { name: $name, description: $description }
-      where: { id: $id }
     ) {
-      ...Card_card
+      count
     }
   }
-  ${CardComponent.fragments.card}
 `;
 
 export const Card = compose(
   graphql(EditCardMutation, {
     props: ({ mutate }) => ({
-      storeCard: ({ id, name, description }) => {
+      storeCard: ({
+        id,
+        name,
+        description,
+        old_name,
+        old_description,
+      }) => {
         return mutate({
           variables: {
             id,
             name,
+            old_name,
             description,
+            old_description,
           },
         });
       },
