@@ -21,7 +21,7 @@ type Mutation {
   #mutation AddCardMutation( $cardListId: ID! $name: String!
   #mutation moveCard( $cardId: ID! $oldCardListId: ID! $cardListId: ID!
 
-  updateManyCards(data: CardUpdateInput!, where: CardWhereInput!): BatchPayload!
+  updateCard(data: CardUpdateInput!, where: CardWhereUniqueInput!): Card!
   #used in:
   #updateCard(data: CardUpdateInput!, where: CardWhereUniqueInput!): Card
 

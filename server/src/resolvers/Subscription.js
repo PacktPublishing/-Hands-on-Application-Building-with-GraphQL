@@ -5,14 +5,14 @@ const Subscription = {
     subscribe: async (parent, args, ctx, info) => {
       // check User Auth Token
       getUserId(ctx);
-      return ctx.db.subscription.board({}, info);
+      return ctx.db.subscription.board(args, info);
     },
   },
   list: {
     subscribe: async (parent, args, ctx, info) => {
       // check User Auth Token
       getUserId(ctx);
-      return ctx.db.subscription.list({}, info);
+      return ctx.db.subscription.list(args, info);
     },
   },
   card: {

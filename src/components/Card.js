@@ -5,9 +5,13 @@ import {
   Button,
   Form,
   Icon,
+  Image,
   Message,
   Modal,
+  Segment,
 } from 'semantic-ui-react';
+
+import TimeAgo from 'react-timeago';
 
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -105,13 +109,6 @@ export class CardComponent extends React.Component {
       old_description,
     })
       .then(({ data }) => {
-        const { updateManyCards } = data;
-        const { count = 0 } = updateManyCards;
-        if (count == 0) {
-          throw new Error(
-            'No Card with old values found - may have been changed in the meantime!'
-          );
-        }
         this.setLoading(false);
         this.hide();
       })
@@ -149,8 +146,7 @@ export class CardComponent extends React.Component {
       fontWeight: 'bold',
       fontStyle: 'italic',
     };
-    const { isDragging } = this.props;
-
+    const { isDragging, updatedBy = {} } = this.props;
     return (
       <CardDiv onClick={() => this.showAndReset()}>
         <Modal open={showModal} onClose={this.hide}>
@@ -196,6 +192,28 @@ export class CardComponent extends React.Component {
                 currentValue={description}
               />
             </Form>
+            <Segment>
+              <Message>
+                <p>
+                  <strong>created: </strong>
+                  <TimeAgo
+                    date={this.props.createdAt}
+                  />
+                </p>
+                <p>
+                  <strong>updated: </strong>
+                  <TimeAgo
+                    date={this.props.updatedAt}
+                  />
+                  <strong> by: </strong>
+                  {updatedBy &&
+                    <Image avatar src={updatedBy.avatarUrl} >
+                    </Image>
+                  }
+                  <span>{updatedBy?updatedBy.name : "?"}</span>
+                </p>
+              </Message>
+            </Segment>
           </Modal.Content>
           <Modal.Actions>
             {!!conflict && (
@@ -250,6 +268,13 @@ CardComponent.fragments = {
       id
       name
       description
+      createdAt
+      updatedAt
+      updatedBy {
+        avatarUrl
+        name
+        id
+      }
     }
   `,
 };
@@ -258,20 +283,26 @@ const EditCardMutation = gql`
   mutation updateCard(
     $id: ID!
     $name: String
-    $description: String
-    $old_name: String
-    $old_description: String
+    $description: String 
+    #$old_name: String 
+    #$old_description: String
   ) {
-    updateManyCards(
-      where: {
-        AND: [ { id: $id } { name: $old_name }
-          { description: $old_description } ]
-      }
+    updateCard(
+      where: { id: $id }
+      # where: {
+      #   AND: [
+      #     { id: $id }
+      #     { name: $old_name }
+      #     { description: $old_description }
+      #   ]
+      # }
       data: { name: $name, description: $description }
     ) {
-      count
+      #count
+      ...Card_card
     }
   }
+  ${CardComponent.fragments.card}
 `;
 
 export const Card = compose(

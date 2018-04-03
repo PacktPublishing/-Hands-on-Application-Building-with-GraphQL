@@ -2,16 +2,38 @@ type Board {
   id: ID! @unique
   lists: [List!]!
   name: String!
+
+  #createdBy: User
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! # read-only (managed by Graphcool)
+  updatedAt: DateTime! # read-only (managed by Graphcool)
 }
+
 type List {
   cards: [Card!]!
   id: ID! @unique
   name: String!
+  #createdBy: User
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! # read-only (managed by Graphcool)
+  updatedAt: DateTime! # read-only (managed by Graphcool)
 }
+
 type Card {
   id: ID! @unique
   name: String!
   description: String @default(value: "")
+
+  #createdBy: User
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! # read-only (managed by Graphcool)
+  updatedAt: DateTime! # read-only (managed by Graphcool)
 }
 
 type User {

@@ -2,9 +2,19 @@ const { getUserId } = require('../../utils');
 
 const board = {
   async updateBoard(parent, args, ctx, info) {
-    getUserId(ctx);
+    const userId = getUserId(ctx);
     const board = await ctx.db.mutation.updateBoard(
-      args,
+      {
+        where: args.where,
+        data: {
+          ...args.data,
+          updatedBy: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      },
       info
     );
     return board;

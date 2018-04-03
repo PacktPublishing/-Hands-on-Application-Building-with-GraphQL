@@ -9,18 +9,27 @@ type Board implements Node {
   id: ID!
   lists(where: ListWhereInput, orderBy: ListOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [List!]
   name: String!
+  updatedBy(where: UserWhereInput): User
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Card implements Node {
   id: ID!
   name: String!
   description: String
+  updatedBy(where: UserWhereInput): User
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type List implements Node {
   cards(where: CardWhereInput, orderBy: CardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Card!]
   id: ID!
   name: String!
+  updatedBy(where: UserWhereInput): User
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type User implements Node {
@@ -78,11 +87,17 @@ type BoardConnection {
 input BoardCreateInput {
   name: String!
   lists: ListCreateManyInput
+  updatedBy: UserCreateOneWithoutBoardsInput
 }
 
-input BoardCreateManyInput {
-  create: [BoardCreateInput!]
+input BoardCreateManyWithoutUpdatedByInput {
+  create: [BoardCreateWithoutUpdatedByInput!]
   connect: [BoardWhereUniqueInput!]
+}
+
+input BoardCreateWithoutUpdatedByInput {
+  name: String!
+  lists: ListCreateManyInput
 }
 
 """
@@ -104,15 +119,17 @@ enum BoardOrderByInput {
   id_DESC
   name_ASC
   name_DESC
-  updatedAt_ASC
-  updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type BoardPreviousValues {
   id: ID!
   name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type BoardSubscriptionPayload {
@@ -150,34 +167,35 @@ input BoardSubscriptionWhereInput {
   node: BoardWhereInput
 }
 
-input BoardUpdateDataInput {
-  name: String
-  lists: ListUpdateManyInput
-}
-
 input BoardUpdateInput {
   name: String
   lists: ListUpdateManyInput
+  updatedBy: UserUpdateOneWithoutBoardsInput
 }
 
-input BoardUpdateManyInput {
-  create: [BoardCreateInput!]
+input BoardUpdateManyWithoutUpdatedByInput {
+  create: [BoardCreateWithoutUpdatedByInput!]
   connect: [BoardWhereUniqueInput!]
   disconnect: [BoardWhereUniqueInput!]
   delete: [BoardWhereUniqueInput!]
-  update: [BoardUpdateWithWhereUniqueNestedInput!]
-  upsert: [BoardUpsertWithWhereUniqueNestedInput!]
+  update: [BoardUpdateWithWhereUniqueWithoutUpdatedByInput!]
+  upsert: [BoardUpsertWithWhereUniqueWithoutUpdatedByInput!]
 }
 
-input BoardUpdateWithWhereUniqueNestedInput {
-  where: BoardWhereUniqueInput!
-  data: BoardUpdateDataInput!
+input BoardUpdateWithoutUpdatedByDataInput {
+  name: String
+  lists: ListUpdateManyInput
 }
 
-input BoardUpsertWithWhereUniqueNestedInput {
+input BoardUpdateWithWhereUniqueWithoutUpdatedByInput {
   where: BoardWhereUniqueInput!
-  update: BoardUpdateDataInput!
-  create: BoardCreateInput!
+  data: BoardUpdateWithoutUpdatedByDataInput!
+}
+
+input BoardUpsertWithWhereUniqueWithoutUpdatedByInput {
+  where: BoardWhereUniqueInput!
+  update: BoardUpdateWithoutUpdatedByDataInput!
+  create: BoardCreateWithoutUpdatedByInput!
 }
 
 input BoardWhereInput {
@@ -295,9 +313,68 @@ input BoardWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
   lists_every: ListWhereInput
   lists_some: ListWhereInput
   lists_none: ListWhereInput
+  updatedBy: UserWhereInput
 }
 
 input BoardWhereUniqueInput {
@@ -322,6 +399,7 @@ type CardConnection {
 input CardCreateInput {
   name: String!
   description: String
+  updatedBy: UserCreateOneInput
 }
 
 input CardCreateManyInput {
@@ -350,16 +428,18 @@ enum CardOrderByInput {
   name_DESC
   description_ASC
   description_DESC
-  updatedAt_ASC
-  updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type CardPreviousValues {
   id: ID!
   name: String!
   description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type CardSubscriptionPayload {
@@ -400,11 +480,13 @@ input CardSubscriptionWhereInput {
 input CardUpdateDataInput {
   name: String
   description: String
+  updatedBy: UserUpdateOneInput
 }
 
 input CardUpdateInput {
   name: String
   description: String
+  updatedBy: UserUpdateOneInput
 }
 
 input CardUpdateManyInput {
@@ -595,11 +677,72 @@ input CardWhereInput {
   All values not ending with the given string.
   """
   description_not_ends_with: String
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
+  updatedBy: UserWhereInput
 }
 
 input CardWhereUniqueInput {
   id: ID
 }
+
+scalar DateTime
 
 """
 A connection to a list of items.
@@ -619,6 +762,7 @@ type ListConnection {
 input ListCreateInput {
   name: String!
   cards: CardCreateManyInput
+  updatedBy: UserCreateOneInput
 }
 
 input ListCreateManyInput {
@@ -645,15 +789,17 @@ enum ListOrderByInput {
   id_DESC
   name_ASC
   name_DESC
-  updatedAt_ASC
-  updatedAt_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type ListPreviousValues {
   id: ID!
   name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type ListSubscriptionPayload {
@@ -694,11 +840,13 @@ input ListSubscriptionWhereInput {
 input ListUpdateDataInput {
   name: String
   cards: CardUpdateManyInput
+  updatedBy: UserUpdateOneInput
 }
 
 input ListUpdateInput {
   name: String
   cards: CardUpdateManyInput
+  updatedBy: UserUpdateOneInput
 }
 
 input ListUpdateManyInput {
@@ -836,9 +984,68 @@ input ListWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
   cards_every: CardWhereInput
   cards_some: CardWhereInput
   cards_none: CardWhereInput
+  updatedBy: UserWhereInput
 }
 
 input ListWhereUniqueInput {
@@ -965,7 +1172,24 @@ input UserCreateInput {
   password: String!
   name: String!
   avatarUrl: String
-  boards: BoardCreateManyInput
+  boards: BoardCreateManyWithoutUpdatedByInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutBoardsInput {
+  create: UserCreateWithoutBoardsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutBoardsInput {
+  email: String!
+  password: String!
+  name: String!
+  avatarUrl: String
 }
 
 """
@@ -1042,12 +1266,55 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
+input UserUpdateDataInput {
+  email: String
+  password: String
+  name: String
+  avatarUrl: String
+  boards: BoardUpdateManyWithoutUpdatedByInput
+}
+
 input UserUpdateInput {
   email: String
   password: String
   name: String
   avatarUrl: String
-  boards: BoardUpdateManyInput
+  boards: BoardUpdateManyWithoutUpdatedByInput
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+}
+
+input UserUpdateOneWithoutBoardsInput {
+  create: UserCreateWithoutBoardsInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: UserUpdateWithoutBoardsDataInput
+  upsert: UserUpsertWithoutBoardsInput
+}
+
+input UserUpdateWithoutBoardsDataInput {
+  email: String
+  password: String
+  name: String
+  avatarUrl: String
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
+}
+
+input UserUpsertWithoutBoardsInput {
+  update: UserUpdateWithoutBoardsDataInput!
+  create: UserCreateWithoutBoardsInput!
 }
 
 input UserWhereInput {

@@ -259,6 +259,13 @@ const CardsSubscription = gql`
         id
         name
         description
+        createdAt
+        updatedAt
+        updatedBy {
+          avatarUrl
+          name
+          id
+        }
       }
       previousValues {
         id

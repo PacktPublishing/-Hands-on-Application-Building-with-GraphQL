@@ -2,9 +2,20 @@ const { getUserId } = require('../../utils');
 
 const list = {
   async updateList(parent, args, ctx, info) {
-    getUserId(ctx);
+    const userId = getUserId(ctx);
+
     const list = await ctx.db.mutation.updateList(
-      args,
+      {
+        where: args.where,
+        data: {
+          ...args.data,
+          updatedBy: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      },
       info
     );
     return list;
