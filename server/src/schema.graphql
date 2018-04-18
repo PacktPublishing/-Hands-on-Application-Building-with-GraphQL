@@ -3,6 +3,7 @@
 type Query {
   me: User
   board(where: BoardWhereUniqueInput!): Board
+  list(where: ListWhereUniqueInput!): List
 }
 
 type Mutation {

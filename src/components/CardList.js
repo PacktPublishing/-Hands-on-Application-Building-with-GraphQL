@@ -2,10 +2,13 @@ import React from 'react';
 import { DropTarget } from 'react-dnd';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+
 import {
   Button,
   Header,
   Icon,
+  Loader,
   Popup,
 } from 'semantic-ui-react';
 
@@ -17,12 +20,20 @@ class CardListWithoutDnd extends React.Component {
     const {
       connectDropTarget,
       isOver,
-      cards,
-      name,
       id,
       addCardWithName = () => {},
       deleteListWithId = () => {},
     } = this.props;
+
+    const { cardList } = this.props;
+    const { list = {}, loading, error } = cardList;
+
+    if (error) {
+      return <div>ERROR! {error.message} </div>;
+    }
+
+    // use name injected as default if not yet available
+    let { name = this.props.name, cards = [] } = list;
 
     return (
       <div>
@@ -40,17 +51,22 @@ class CardListWithoutDnd extends React.Component {
                 </CardListButton>
               </CardListHeader>
 
-              <InnerScrollContainer>
-                <CardsContainer>
-                  {cards.map(c => (
-                    <Card
-                      key={c.id}
-                      {...c}
-                      cardListId={id}
-                    />
-                  ))}
-                </CardsContainer>
-              </InnerScrollContainer>
+              {loading ? (
+                <Loader active />
+              ) : (
+                <InnerScrollContainer>
+                  <CardsContainer>
+                    {cards.map(c => (
+                      <Card
+                        key={c.id}
+                        {...c}
+                        cardListId={id}
+                      />
+                    ))}
+                  </CardsContainer>
+                </InnerScrollContainer>
+              )}
+
               <CardListButton onButtonClick={() => addCardWithName(id)}>
                 <Icon name="plus" />
                 Add a card
@@ -94,11 +110,43 @@ const collect = (connect, monitor) => ({
   isOver: monitor.isOver(),
 });
 
-export const CardList = DropTarget(
-  ItemTypes.CARD,
-  dropTarget,
-  collect
-)(CardListWithoutDnd);
+const CardListfragments = {
+  list: gql`
+    fragment CardList_list on List {
+      name
+      id
+      cards {
+        ...Card_card
+      }
+    }
+    ${Card.fragments.card}
+  `,
+};
+
+const queryOptions = {
+  name: 'cardList',
+  options: props => ({
+    variables: {
+      cardListId: props.id,
+    },
+  }),
+};
+
+export const CardList = graphql(
+  gql`
+    query CardList($cardListId: ID) {
+      list(where: { id: $cardListId }) {
+        ...CardList_list
+      }
+    }
+    ${CardListfragments.list}
+  `,
+  queryOptions
+)(
+  DropTarget(ItemTypes.CARD, dropTarget, collect)(
+    CardListWithoutDnd
+  )
+);
 
 const CardListHeader = ({ name, children }) => (
   <div
@@ -192,18 +240,8 @@ CardList.propTypes = {
   addCardWithName: PropTypes.func,
   deleteListWithId: PropTypes.func,
   moveCardToList: PropTypes.func,
-  cards: PropTypes.array,
 };
 
 CardList.fragments = {
-  list: gql`
-    fragment CardList_list on List {
-      name
-      id
-      cards {
-        ...Card_card
-      }
-    }
-    ${Card.fragments.card}
-  `,
+  ...CardListfragments,
 };

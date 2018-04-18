@@ -97,7 +97,6 @@ class Board extends React.Component {
           {lists.map(list => (
             <CardList
               key={list.id}
-              cards={list.cards}
               name={list.name}
               id={list.id}
               moveCardToList={onMoveCardToList}
@@ -190,10 +189,10 @@ Board.fragments = {
       name
       id
       lists {
-        ...CardList_list
+        name
+        id
       }
     }
-    ${CardList.fragments.list}
   `,
 };
 
@@ -261,11 +260,6 @@ const BoardSubscription = gql`
         lists {
           name
           id
-          cards {
-            id
-            name
-            description
-          }
         }
       }
       previousValues {
@@ -362,10 +356,10 @@ const addListMutation = graphql(
         data: { lists: { create: { name: $name } } }
         where: { id: $boardId }
       ) {
-        # used as a result in the mutation-action promise ...
-        id #...Board_board
+        ...Board_board
       }
     }
+    ${Board.fragments.board}
   `,
   {
     name: 'addListMutation',
@@ -382,7 +376,7 @@ let deleteAllLists = graphql(
         data: { lists: { delete: $listIds } }
         where: { id: $boardId }
       ) {
-        id #...Board_board
+        id
       }
     }
   `,
