@@ -3,9 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-cache-inmemory": "^1.1.7",
+    "apollo-client": "^2.2.2",
+    "apollo-link": "^1.0.7",
+    "apollo-link-schema": "^1.0.2",
     "create-react-app": "^1.4.3",
+    "graphql": "^0.12.3",
+    "graphql-tag": "^2.6.1",
+    "graphql-tools": "^2.18.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-apollo": "^2.0.4",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.0",
     "styled-components": "latest"
