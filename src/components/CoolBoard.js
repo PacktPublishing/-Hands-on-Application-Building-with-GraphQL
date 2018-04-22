@@ -3,6 +3,7 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { compose } from 'react-apollo';
 
 import {
   BoardContainer,
@@ -10,7 +11,12 @@ import {
 } from './BoardContainer';
 import { CardList } from './CardList';
 
-const Board = ({ data }) => {
+const Board = ({
+  data,
+  addList,
+  addCard,
+  boardId,
+}) => {
   const { loading, error, board } = data;
 
   if (loading) {
@@ -26,16 +32,40 @@ const Board = ({ data }) => {
 
   if (board) {
     const { name, lists = [] } = board;
+
     const onCardListAddItem = cardListId => {
       console.log(
         `triggered adding item to list with id: ${cardListId}`
       );
+
+      addCard({
+        boardId,
+        cardListId,
+        name: 'New-Card',
+      })
+        .then(({ data }) => {
+          console.log('got data', data);
+        })
+        .catch(error => {
+          console.log('there was an error sending the query', error);
+        });
     };
 
     const onBoardAddItem = () => {
       console.log(
         `triggered adding list to the board`
       );
+
+      addList({
+        boardId,
+        name: 'New-List',
+      })
+        .then(({ data }) => {
+          console.log('got data', data);
+        })
+        .catch(error => {
+          console.log('there was an error sending the query', error);
+        });
     };
 
     return (
@@ -61,6 +91,7 @@ const BoardQuery = gql`
   query board($boardId: ID) {
     board(where: { id: $boardId }) {
       name
+      id
       lists {
         id
         ...CardList_list
@@ -78,7 +109,52 @@ const queryConfig = {
   }),
 };
 
-export const CoolBoard = graphql(
-  BoardQuery,
-  queryConfig
+let AddCardMutation = gql`
+  mutation AddCardMutation($cardListId: ID!, $name: String!) {
+    updateList(
+      data: { cards: { create: { name: $name } } }
+      where: { id: $cardListId }
+    ) {
+      name
+      id
+    }
+  }
+`;
+let AddListMutation = gql`
+  mutation($boardId: ID!, $name: String!) {
+    updateBoard(
+      data: { lists: { create: { name: $name } } }
+      where: { id: $boardId }
+    ) {
+      id
+    }
+  }
+`;
+
+export const CoolBoard = compose(
+  graphql(AddListMutation, {
+    name: 'addListMutation',
+    props: ({ addListMutation }) => ({
+      addList: ({ name, boardId }) =>
+        addListMutation({
+          variables: {
+            boardId,
+            name,
+          },
+        }),
+    }),
+  }),
+  graphql(AddCardMutation, {
+    name: 'addCardMutation',
+    props: ({ addCardMutation }) => ({
+      addCard: ({ name, cardListId }) =>
+        addCardMutation({
+          variables: {
+            cardListId,
+            name,
+          },
+        }),
+    }),
+  }),
+  graphql(BoardQuery, queryConfig)
 )(Board);

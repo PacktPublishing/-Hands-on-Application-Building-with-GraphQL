@@ -52,7 +52,24 @@ export const AddListButton = ({ onAddNewList }) => (
     Add a list
   </Button>
 );
+export const DelListButton = ({ action, children }) => (
+  <Button
+    onClick={() => action()}
+    style={{
+      flexShrink: 0,
+      flexGrow: 0,
+      alignSelf: 'flex-start',
+    }}>
+    <Icon name="delete" />
+    {children && children}
+    {!children && 'Delete'}
+  </Button>
+);
 
+DelListButton.propTypes = {
+  onAddNewList: PropTypes.func,
+  children: PropTypes.array.isRequired,
+};
 AddListButton.propTypes = {
   onAddNewList: PropTypes.func,
 };
