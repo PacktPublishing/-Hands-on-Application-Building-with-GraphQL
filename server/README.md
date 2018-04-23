@@ -1,3 +1,18 @@
+# Local GraphQL server based on Prisma
+
+To run you local server, you will have to run these commands in a
+terminal in this sub-folder (after a `cd server`).
+
+Then you will first need to install this library **global** via 
+`npm install -g prisma@1.5.3` or 
+`yarn global add prisma@1.5.3`.
+
+After having docker started on you local machine and running `prisma local start`,
+you then run `prisma deploy` and deploy it _locally_.
+
+Check it by opening this page in your browser: [http://localhost:4466/CoolBoardDB/dev](http://localhost:4466/CoolBoardDB/dev)
+
+
 # Trello-REST-Api wrapper - quick start
 
 To run you local server, you will have to run these commands in a
