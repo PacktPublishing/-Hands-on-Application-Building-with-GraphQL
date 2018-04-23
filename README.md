@@ -38,3 +38,5 @@ Running in Apollo launchpad:
 2.2 [coolboard-lists-cards-simple-mocks](https://launchpad.graphql.com/w53zvlpxpz)
 
 2.3 [Trello REST wrapper](https://launchpad.graphql.com/9jl8jr7v4r)
+
+2.4 [Local server](./server/README.md) as a trello-rest wrapper/proxy
