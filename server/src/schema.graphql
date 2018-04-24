@@ -6,10 +6,34 @@ type Query {
 }
 
 type Mutation {
+  createBoard(name: String!): User!
+  deleteBoard(id: ID!): Board!
   signup(email: String!, password: String!, name: String!, avatarUrl: String): AuthPayload!
   login(email: String!, password: String!): AuthPayload!
+
+  updateBoard(data: BoardUpdateInput!, where: BoardWhereUniqueInput!): Board
+  #used in:
+  #updateBoard(data: {lists: {create: {name: $name}}}, where: {id: $boardId})
+  #mutation deletelistsOfBoard($boardId: ID!, $listIds: [ListWhereUniqueInput!]!) {
+
+  updateList(data: ListUpdateInput!, where: ListWhereUniqueInput!): List
+  #used in:
+  #mutation AddCardMutation( $cardListId: ID! $name: String!
+  #mutation moveCard( $cardId: ID! $oldCardListId: ID! $cardListId: ID!
+
+  updateManyCards(data: CardUpdateInput!, where: CardWhereInput!): BatchPayload!
+  #used in:
+  #updateCard(data: CardUpdateInput!, where: CardWhereUniqueInput!): Card
+
+  deleteList(where: ListWhereUniqueInput!): List
 }
 
+type Subscription {
+  board(where: BoardSubscriptionWhereInput): BoardSubscriptionPayload
+  list(where: ListSubscriptionWhereInput): ListSubscriptionPayload
+  card(where: CardSubscriptionWhereInput): CardSubscriptionPayload
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+}
 
 type AuthPayload {
   token: String!
@@ -21,4 +45,5 @@ type User {
   email: String!
   name: String!
   avatarUrl: String
+  boards: [Board]
 }

@@ -20,7 +20,9 @@ import {
 } from 'react-router-dom';
 
 import './App.css';
+
 import { CoolBoard } from './components/CoolBoard';
+import Boards from './components/Boards';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import { FullVerticalContainer } from './components/FullVerticalContainer';
@@ -46,9 +48,14 @@ const middlewareAuthLink = new ApolloLink(
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4466/CoolBoardDB/dev`,
+  uri: `ws://localhost:4000`,
   options: {
     reconnect: true,
+    connectionParams: {
+      Authorization: `Bearer ${localStorage.getItem(
+        'token'
+      )}`,
+    },
   },
 });
 
@@ -87,7 +94,20 @@ class App extends Component {
                 render={() => (
                   <FullVerticalContainer>
                     <ProfileHeader />
-                    <CoolBoard boardId="cjd90t1gw0019018143trudyk" />
+                    <Boards />
+                  </FullVerticalContainer>
+                )}
+              />
+
+              <Route
+                exact
+                path="/board/:id"
+                render={({ match }) => (
+                  <FullVerticalContainer>
+                    <ProfileHeader />
+                    <CoolBoard
+                      boardId={match.params.id}
+                    />
                   </FullVerticalContainer>
                 )}
               />

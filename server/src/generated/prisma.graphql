@@ -29,6 +29,7 @@ type User implements Node {
   password: String!
   name: String!
   avatarUrl: String
+  boards(where: BoardWhereInput, orderBy: BoardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Board!]
 }
 
 
@@ -77,6 +78,11 @@ type BoardConnection {
 input BoardCreateInput {
   name: String!
   lists: ListCreateManyInput
+}
+
+input BoardCreateManyInput {
+  create: [BoardCreateInput!]
+  connect: [BoardWhereUniqueInput!]
 }
 
 """
@@ -144,9 +150,34 @@ input BoardSubscriptionWhereInput {
   node: BoardWhereInput
 }
 
+input BoardUpdateDataInput {
+  name: String
+  lists: ListUpdateManyInput
+}
+
 input BoardUpdateInput {
   name: String
   lists: ListUpdateManyInput
+}
+
+input BoardUpdateManyInput {
+  create: [BoardCreateInput!]
+  connect: [BoardWhereUniqueInput!]
+  disconnect: [BoardWhereUniqueInput!]
+  delete: [BoardWhereUniqueInput!]
+  update: [BoardUpdateWithWhereUniqueNestedInput!]
+  upsert: [BoardUpsertWithWhereUniqueNestedInput!]
+}
+
+input BoardUpdateWithWhereUniqueNestedInput {
+  where: BoardWhereUniqueInput!
+  data: BoardUpdateDataInput!
+}
+
+input BoardUpsertWithWhereUniqueNestedInput {
+  where: BoardWhereUniqueInput!
+  update: BoardUpdateDataInput!
+  create: BoardCreateInput!
 }
 
 input BoardWhereInput {
@@ -934,6 +965,7 @@ input UserCreateInput {
   password: String!
   name: String!
   avatarUrl: String
+  boards: BoardCreateManyInput
 }
 
 """
@@ -1015,6 +1047,7 @@ input UserUpdateInput {
   password: String
   name: String
   avatarUrl: String
+  boards: BoardUpdateManyInput
 }
 
 input UserWhereInput {
@@ -1291,6 +1324,9 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   avatarUrl_not_ends_with: String
+  boards_every: BoardWhereInput
+  boards_some: BoardWhereInput
+  boards_none: BoardWhereInput
 }
 
 input UserWhereUniqueInput {

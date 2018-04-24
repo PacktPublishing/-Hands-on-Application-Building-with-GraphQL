@@ -11,7 +11,6 @@ import {
   DelListButton,
 } from './BoardContainer';
 import { CardList } from './CardList';
-import Card from './Card';
 
 class Board extends React.Component {
   render() {
@@ -175,7 +174,7 @@ class Board extends React.Component {
       },
       updateQuery: (prev, { subscriptionData }) => {
         console.log(
-          'update:',
+          'updating board:',
           subscriptionData.data.board
         );
       },
@@ -185,14 +184,11 @@ class Board extends React.Component {
     boardQuery.subscribeToMore({
       document: ListsSubscription,
       updateQuery: (prev, { subscriptionData }) => {
-        console.log(
-          'update:',
-          subscriptionData.data.list
-        );
         if (!subscriptionData.data) {
           return prev;
         }
         const { list } = subscriptionData.data;
+        console.log('updating list:', list);
 
         /* Deleting "leaf" without any board-change-update
          * Update local cache, by updating board locally
@@ -226,10 +222,11 @@ class Board extends React.Component {
     boardQuery.subscribeToMore({
       document: CardsSubscription,
       updateQuery: (prev, { subscriptionData }) => {
-        console.log(
-          'update:',
-          subscriptionData.data.card
-        );
+        if (subscriptionData.data)
+          console.log(
+            'updating card:',
+            subscriptionData.data.card
+          );
       },
     });
   }
@@ -248,12 +245,20 @@ Board.fragments = {
   `,
 };
 
+/*
+ Workaround:
+ We need to replace the fragments in subscriptions
+ until this bug will be fixed
+ https://github.com/graphcool/prisma/issues/2026
+*/
 const CardsSubscription = gql`
   subscription {
     card(where: {}) {
       mutation
       node {
-        ...Card_card
+        id
+        name
+        description
       }
       previousValues {
         id
@@ -262,7 +267,7 @@ const CardsSubscription = gql`
       updatedFields
     }
   }
-  ${Card.fragments.card}
+  # {Card.fragments.card}
 `;
 
 const ListsSubscription = gql`
@@ -274,11 +279,17 @@ const ListsSubscription = gql`
         name
       }
       node {
-        ...CardList_list
+        name
+        id
+        cards {
+          id
+          name
+          description
+        }
       }
     }
   }
-  ${CardList.fragments.list}
+  # {CardList.fragments.list}
 `;
 
 const BoardSubscription = gql`
@@ -286,7 +297,17 @@ const BoardSubscription = gql`
     board(where: { node: { id: $boardId } }) {
       mutation
       node {
-        ...Board_board
+        name
+        id
+        lists {
+          name
+          id
+          cards {
+            id
+            name
+            description
+          }
+        }
       }
       previousValues {
         id
@@ -295,7 +316,7 @@ const BoardSubscription = gql`
       updatedFields
     }
   }
-  ${Board.fragments.board}
+  # {Board.fragments.board}
 `;
 
 const BoardQuery = gql`

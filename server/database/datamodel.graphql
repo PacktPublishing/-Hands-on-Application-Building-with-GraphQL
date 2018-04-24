@@ -20,4 +20,5 @@ type User {
   password: String!
   name: String!
   avatarUrl: String @default(value:"")
+  boards: [Board!]!
 }
