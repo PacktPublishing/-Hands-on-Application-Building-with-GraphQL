@@ -1,0 +1,24 @@
+# import Board from "./generated/prisma.graphql"
+
+type Query {
+  me: User
+  board(where: BoardWhereUniqueInput!): Board
+}
+
+type Mutation {
+  signup(email: String!, password: String!, name: String!, avatarUrl: String): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+}
+
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  avatarUrl: String
+}

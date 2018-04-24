@@ -1,3 +1,7 @@
-node_modules
+dist
 package-lock.json
-yarn.lock
+node_modules
+.idea
+.vscode
+*.log
+.env*

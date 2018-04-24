@@ -13,6 +13,7 @@ type Card {
   name: String!
   description: String @default(value: "")
 }
+
 type User {
   id: ID! @unique
   email: String! @unique

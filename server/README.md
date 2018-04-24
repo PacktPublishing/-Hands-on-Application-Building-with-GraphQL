@@ -3,56 +3,28 @@
 To run you local server, you will have to run these commands in a
 terminal in this sub-folder (after a `cd server`).
 
-Then you will first need to install this library **global** via 
-`npm install -g prisma@1.5.3` or 
-`yarn global add prisma@1.5.3`.
+Based on Boilerplate for an Advanced GraphQL Server
 
-After having docker started on you local machine and running `prisma local start`,
-you then run `prisma deploy` and deploy it _locally_.
+## Features
 
-Check it by opening this page in your browser: [http://localhost:4466/CoolBoardDB/dev](http://localhost:4466/CoolBoardDB/dev)
+- **Scalable GraphQL server:** The server uses [`graphql-yoga`](https://github.com/prisma/graphql-yoga) which is based on Apollo Server & Express
+- **GraphQL database:** Includes GraphQL database binding to [Prisma](https://www.prismagraphql.com) (running on MySQL)
+- **Authentication**: Signup and login workflows are ready to use for your users
+- **Tooling**: Out-of-the-box support for [GraphQL Playground](https://github.com/prisma/graphql-playground) & [query performance tracing](https://github.com/apollographql/apollo-tracing)
+- **Extensible**: Simple and flexible [data model](./database/datamodel.graphql) – easy to adjust and extend
+- **No configuration overhead**: Preconfigured [`graphql-config`](https://github.com/prisma/graphql-config) setup
+- **Realtime updates**: Support for GraphQL subscriptions (_coming soon_)
+
+For a fully-fledged **GraphQL & Node.js tutorial**, visit [How to GraphQL](https://www.howtographql.com/graphql-js/0-introduction/). You can more learn about the idea behind GraphQL boilerplates [here](https://blog.graph.cool/graphql-boilerplates-graphql-create-how-to-setup-a-graphql-project-6428be2f3a5).
+
+### Commands
 
 
-# Trello-REST-Api wrapper - quick start
+After having docker started on you local machine you can deploy _locally_.
 
-To run you local server, you will have to run these commands in a
-terminal in this sub-folder (after a `cd server`).
+* `yarn start` starts GraphQL server on `http://localhost:4000`
+* `yarn dev` starts GraphQL server on `http://localhost:4000` _and_ opens GraphQL Playground
+* `yarn playground` opens the GraphQL Playground for the `projects` from [`.graphqlconfig.yml`](./.graphqlconfig.yml)
+* `yarn prisma <subcommand>` gives access to local version of Prisma CLI (e.g. `yarn prisma deploy`)
 
-Then you will first to install all libraries per `npm install` or `yarn`.
-
-## run apollo-express-server
-
-```bash
-yarn run start
-```
-and [open graphiql](http://localhost:3000/graphiql?query=%7B%0A%20%20Member(username%3A%22taco%22)%20%7B%0A%20%20%20%20id%0A%20%20%20%20url%0A%20%20%20%20username%0A%20%20%20%20boards%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D)
-
-## run express-graphql
-
-```bash
-yarn run start-express
-```
-and [open graphiql](http://localhost:4000/?query=%7B%0A%20%20Member(username%3A%22taco%22)%20%0A%20%20%7B%0A%20%20%20%20id%0A%20%20%20%20username%0A%20%20%20%20url%0A%20%20%20%20boards%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A)
-   
-## run graphql-yoga
-```bash
-yarn run start-yoga
-```
-and [open graphcool playground](http://localhost:4000/)
-
-You can for example run this query:
-```
-{
-  Member(username:"taco") 
-  {
-    id
-    username
-    url
-    boards {
-      id
-      name
-    }
-  }
-}
-```
-
+> **Note**: We recommend that you're using `yarn dev` during development as it will give you access to the GraphQL API or your server (defined by the [application schema](./src/schema.graphql)) as well as to the Prisma API directly (defined by the [Prisma database schema](./generated/prisma.graphql)). If you're starting the server with `yarn start`, you'll only be able to access the API of the application schema.
