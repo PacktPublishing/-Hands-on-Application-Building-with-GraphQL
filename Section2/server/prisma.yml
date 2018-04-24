@@ -1,0 +1,9 @@
+service: CoolBoardDB
+stage: dev
+
+datamodel: datamodel.graphql
+
+# to enable auth, provide
+# secret: my-secret
+disableAuth: true
+cluster: local

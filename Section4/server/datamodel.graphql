@@ -1,0 +1,22 @@
+type Board {
+  id: ID! @unique
+  lists: [List!]!
+  name: String!
+}
+type List {
+  cards: [Card!]!
+  id: ID! @unique
+  name: String!
+}
+type Card {
+  id: ID! @unique
+  name: String!
+  description: String @default(value: "")
+}
+type User {
+  id: ID! @unique
+  email: String! @unique
+  password: String!
+  name: String!
+  avatarUrl: String @default(value:"")
+}
