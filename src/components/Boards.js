@@ -5,7 +5,6 @@ import gql from 'graphql-tag';
 import {
   Segment,
   Loader,
-  Message,
   Button,
 } from 'semantic-ui-react';
 
@@ -91,39 +90,22 @@ export default class Boards extends Component {
         <Query query={userWithBoardsQuery}>
           {({ loading, error, data, refetch }) => {
             if (loading) return <Loader />;
-            if (error)
-              return (
-                <Message error>
-                  <strong>Error: </strong>
-                  {`${error}`}
-                </Message>
-              );
+            if (error) return false;
 
             return (
               <Mutation
                 onCompleted={refetch}
                 mutation={deleteBoardMutation}>
-                {(deleteBoard, { error }) => {
-                  return (
-                    <div>
-                      {error && (
-                        <Message error>
-                          <strong>Error: </strong>
-                          {`${error}`}
-                        </Message>
-                      )}
-
-                      <BoardList
-                        boards={data.me.boards}
-                        deleteBoard={id => {
-                          return deleteBoard({
-                            variables: { id },
-                          });
-                        }}
-                      />
-                    </div>
-                  );
-                }}
+                {deleteBoard => (
+                  <BoardList
+                    boards={data.me.boards}
+                    deleteBoard={id => {
+                      return deleteBoard({
+                        variables: { id },
+                      });
+                    }}
+                  />
+                )}
               </Mutation>
             );
           }}

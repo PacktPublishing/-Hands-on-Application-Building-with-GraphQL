@@ -1,7 +1,13 @@
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
+const { formatError } = require('apollo-errors');
 const resolvers = require('./resolvers');
 
+const options = {
+  formatError: (...args) => {
+    return formatError(...args);
+  },
+};
 
 const server = new GraphQLServer({
   typeDefs: 'src/schema.graphql',
@@ -20,7 +26,8 @@ const server = new GraphQLServer({
     }),
   }),
 });
-server.start(() =>
+
+server.start(options, () =>
   console.log(
     'Server is running on http://localhost:4000'
   )

@@ -11,6 +11,7 @@
   "author": "Robert Hostlowsky",
   "private": "yes",
   "dependencies": {
+    "apollo-errors": "1.7.1",
     "bcryptjs": "2.4.3",
     "graphql": "0.13.2",
     "graphql-yoga": "1.9.2",

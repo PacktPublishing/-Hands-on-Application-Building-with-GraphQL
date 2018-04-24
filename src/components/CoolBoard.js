@@ -30,19 +30,7 @@ class Board extends React.Component {
     }
 
     if (error) {
-      if (error.graphQLErrors[0]) {
-        return (
-          <div>
-            <h2>GraphQL server error:</h2>
-            <p>
-              <strong>Details: </strong>
-              {error.graphQLErrors[0].message}
-            </p>
-          </div>
-        );
-      }
-
-      return <h2>{`Sorry, ${error.message}`}</h2>;
+      return false;
     }
 
     if (board) {
@@ -63,16 +51,7 @@ class Board extends React.Component {
             cardListId: newCardListId,
             cardId,
           },
-        })
-          .then(({ data }) => {
-            console.log('got data', data);
-          })
-          .catch(error => {
-            console.log(
-              'there was an error sending the query',
-              error
-            );
-          });
+        });
       };
 
       const onCardListAddItem = cardListId => {
@@ -84,32 +63,14 @@ class Board extends React.Component {
           boardId,
           cardListId,
           name: 'Card',
-        })
-          .then(({ data }) => {
-            console.log('got data', data);
-          })
-          .catch(error => {
-            console.log(
-              'there was an error sending the query',
-              error
-            );
-          });
+        });
       };
       const onDeleteCardList = cardListId => {
         deleteCardList({
           variables: {
             cardListId,
           },
-        })
-          .then(({ data }) => {
-            console.log('got data', data);
-          })
-          .catch(error => {
-            console.log(
-              'there was an error sending the query',
-              error
-            );
-          });
+        });
       };
 
       const onBoardAddItem = () => {
@@ -122,16 +83,7 @@ class Board extends React.Component {
             boardId,
             name: 'Section 5',
           },
-        })
-          .then(({ data }) => {
-            console.log('got data', data);
-          })
-          .catch(error => {
-            console.log(
-              'there was an error sending the query',
-              error
-            );
-          });
+        });
       };
 
       return (

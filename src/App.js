@@ -11,6 +11,9 @@ import { WebSocketLink } from 'apollo-link-ws';
 
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloLink, split } from 'apollo-link';
+
+import { createNetworkStatusNotifier } from 'react-apollo-network-status';
+
 /**/
 
 import {
@@ -27,6 +30,7 @@ import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import { FullVerticalContainer } from './components/FullVerticalContainer';
 import { ProfileHeader } from './components/ProfileHeader';
+import { GeneralErrorHandler } from './components/GeneralErrorHandler';
 
 // Create a Http link
 let httpLink = createHttpLink({
@@ -76,8 +80,13 @@ const link = split(
   middlewareAuthLink.concat(httpLink)
 );
 
+const {
+  NetworkStatusNotifier,
+  link: networkStatusNotifierLink,
+} = createNetworkStatusNotifier();
+
 const client = new ApolloClient({
-  link,
+  link: networkStatusNotifierLink.concat(link),
   cache: new InMemoryCache(),
 });
 
@@ -94,6 +103,11 @@ class App extends Component {
                 render={() => (
                   <FullVerticalContainer>
                     <ProfileHeader />
+                    <GeneralErrorHandler
+                      NetworkStatusNotifier={
+                        NetworkStatusNotifier
+                      }
+                    />
                     <Boards />
                   </FullVerticalContainer>
                 )}
@@ -105,6 +119,11 @@ class App extends Component {
                 render={({ match }) => (
                   <FullVerticalContainer>
                     <ProfileHeader />
+                    <GeneralErrorHandler
+                      NetworkStatusNotifier={
+                        NetworkStatusNotifier
+                      }
+                    />
                     <CoolBoard
                       boardId={match.params.id}
                     />
