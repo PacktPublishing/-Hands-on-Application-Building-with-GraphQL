@@ -25,6 +25,7 @@ const Query = {
 */
 
   board(parent, { id }, ctx, info) {
+    getUserId(ctx);
     return ctx.db.query.board({ where: { id } }, info);
   },
 
