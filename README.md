@@ -27,7 +27,7 @@ A go-to resource for programmers keen to building applications in a relatively f
 ### Technical Requirements
 This course has the following software requirements:<br/>
 <UL>
-<LI>OS: Windows 7 or Windows 10
+<LI>OS: Windows 7 or Windows 10, Mac OS, Linux
 <LI>Browser: Google Chrome, Latest Version</LI></UL>
 
 ## Related Products
