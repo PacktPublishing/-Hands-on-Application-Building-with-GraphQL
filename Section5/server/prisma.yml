@@ -1,7 +1,7 @@
 service: CoolBoardDB
 stage: dev
 
-datamodel: datamodel.graphql
+datamodel: datamodel.prisma
 
 # to enable auth, provide
 # secret: my-secret
