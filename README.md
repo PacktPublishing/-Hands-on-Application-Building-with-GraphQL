@@ -1,3 +1,7 @@
+**Note:** After one year, this will get some important updates, which is _in progress_.  
+
+When you want to see the *latest, inofficial* version, please head over to [lowsky/-Hands-on-Application-Building-with-GraphQL](https://github.com/lowsky/-Hands-on-Application-Building-with-GraphQL)
+
 # Hands-on Application Building with GraphQL [Video]
 This is the code repository for [Hands-on Application Building with GraphQL [Video]](https://www.packtpub.com/web-development/hands-application-building-graphql-video?utm_source=github&utm_medium=repository&utm_campaign=9781788991865), published by [Packt](https://www.packtpub.com/?utm_source=github). It contains all the supporting project files necessary to work through the video course from start to finish.
 
