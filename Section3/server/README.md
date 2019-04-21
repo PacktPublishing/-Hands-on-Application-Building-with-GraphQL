@@ -1,16 +1,18 @@
-# Local GraphQL server based on Prisma
+  # Local GraphQL server based on Prisma
 
 To run you local server, you will have to run these commands in a
-terminal in this sub-folder (after a `cd server`).
+terminal in this sub-folder (after a `cd server`):
 
-First, you can startup the local database prisma server with `docker-compose up`.
+* After having docker running on you local machine, 
+you can **start up** the prisma server with `docker-compose up -d`.
 
-After the usual `npm install` or `yarn`, the prisma tooling is available and can be used with `npx prisma ...`:
+* By running `npm install` or `yarn`, the prisma tooling will be installed and available in the next step:
 
-`npx prisma deploy`
+* You then run `npx prisma deploy` to **deploy the schema**.
 
-
-After having docker started on you local machine and running `docker-compose up`,
-you then run `npx prisma deploy` to deploy the schema to the dockerized (mysql) database.
-
-Check it by opening this page in your browser: [http://localhost:4466/](http://localhost:4466/)
+* Finally, **check** it by opening this page: [http://localhost:4466/](http://localhost:4466/) which shows the graphiql or graphql playground.
+---
+* Later, you can **stop** the prisma server via `docker-compose stop` , 
+`docker-compose kill` ,
+  
+* For **completely removing** these docker containers you will need to run `docker-compose kill` and `docker-compose rm` which will destroy all its stored data!  

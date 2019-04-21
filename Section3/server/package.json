@@ -1,9 +1,11 @@
 {
   "name": "local-prisma-db",
   "version": "0.1.0",
-  "description": "The config for a prisma server with specific datamodel for trello board",
+  "description": "The config for a prisma server with the specific datamodel for our kanban board",
   "author": "Robert Hostlowsky",
   "private": true,
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "prisma": "1.31.1"
+  }
 }
