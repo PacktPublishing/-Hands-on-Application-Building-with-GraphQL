@@ -1,37 +1,15 @@
-# Hands-on Application Building with GraphQL (and React)
+# Hands-on Application Building with GraphQL
 
-This repository will contain the client and the server code.
-Both will always fit together, when you navigate through the git history
-for each section. 
+## Section 2: Creating Your Own GraphQL Server
 
----
+1. Using the Built-in GraphQL for Analyzing and Verifying the Schema - 00:12:28
+1. Adding Some Mocked Data in Your Application - 00:05:27
+1. Using Real Trello Data with a REST API - 00:10:18
+1. Running Our Own Server Locally - 00:08:29
+1. Local GraphQL Server with Database - 00:14:09
 
-## Section 1: GraphQL basics
 
-### Video 1.4: Our basic GraphQL schema
-
-```
-type Board @model {
-    id: ID! @isUnique
-    lists: [List!]! @relation(name: "BoardOnList")
-    name: String!
-}
-type List @model {
-    board: Board @relation(name: "BoardOnList")
-    cards: [Card!]! @relation(name: "CardOnList")
-    id: ID! @isUnique
-    name: String!
-}
-type Card @model {
-    id: ID! @isUnique
-    list: List @relation(name: "CardOnList")
-    name: String!
-}
-```
-
-## Section 2:
-
-Running in Apollo launchpad:
+## Tutorial in Apollo launchpad:
 
 2.1 [coolboard-lists-cards-simple](https://launchpad.graphql.com/nxmqnlj917)
 
@@ -39,4 +17,7 @@ Running in Apollo launchpad:
 
 2.3 [Trello REST wrapper](https://launchpad.graphql.com/9jl8jr7v4r)
 
-2.4 [Local server](./server/README.md) as a trello-rest wrapper/proxy
+2.4 [server/README.md](./server/README.md) for details how to start the trello-rest wrapper/proxy
+
+2.5 [server/README.md](./server/README.md) for running the local server based on prisma
+

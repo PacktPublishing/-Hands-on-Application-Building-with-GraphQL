@@ -1,14 +1,18 @@
-# Hands-on Application Building with GraphQL (and React)
+# Hands-on Application Building with GraphQL
 
-This repository will contain the client and the server code.
-Both will always fit together, when you navigate through the git history
-for each section. 
+## Section 1: GraphQL basics / Getting Started with GraphQL
 
----
+### Videos
 
-## Section 1: GraphQL basics
+1. The Course Overview - 00:06:25
+1. Comparing GraphQL to REST: Trello Rest API - 00:16:48
+1. Starting a Project on Graphcool - 00:03:57
+1. Building GraphQL Schema for the project - 00:07:21
+1. Working with GraphQL Queries and Types - 00:08:24
 
-### Video 1.4: Our basic GraphQL schema
+### Addons:
+
+Video 1.4: Our basic GraphQL schema
 
 ```
 type Board @model {
