@@ -1,34 +1,11 @@
 {
-  "name": "trello_rest_wrapper",
+  "name": "local-prisma-db",
   "version": "0.1.0",
-  "description": "A GraphQL server wrapping Trello REST API",
-  "main": "./src/server.js",
-  "scripts": {
-    "start": "nodemon ./src/apollo-server.js --exec babel-node -e js",
-    "start-yoga": "nodemon ./src/graphql-yoga-server.js --exec babel-node -e js",
-    "start-express": "nodemon ./src/express-graphql.js --exec babel-node -e js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "The config for a prisma server with the specific datamodel for our kanban board",
   "author": "Robert Hostlowsky",
   "private": true,
   "devDependencies": {},
   "dependencies": {
-    "apollo-engine": "1.1.0",
-    "apollo-server-express": "1.3.5",
-    "babel-cli": "6.26.0",
-    "babel-plugin-transform-async-generator-functions": "6.24.1",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.6.1",
-    "body-parser": "1.18.2",
-    "casual": "1.5.19",
-    "express": "4.16.3",
-    "express-graphql": "0.6.12",
-    "graphql": "0.13.2",
-    "graphql-extensions": "0.0.10",
-    "graphql-tools": "2.24.0",
-    "graphql-yoga": "1.9.2",
-    "node-fetch": "2.1.2",
-    "nodemon": "1.17.3"
+    "prisma": "1.31.1"
   }
 }
