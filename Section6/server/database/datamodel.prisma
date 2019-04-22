@@ -1,0 +1,46 @@
+type Board {
+  id: ID! @id
+  lists: [List!]!
+  name: String!
+
+  #createdBy: User @createdAt
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! @createdAt # read-only (managed by prisma)
+  updatedAt: DateTime! @updatedAt # read-only (managed by prisma)
+}
+
+type List {
+  cards: [Card!]!
+  id: ID! @id
+  name: String!
+  #createdBy: User @createdAt
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! @createdAt # read-only (managed by prisma)
+  updatedAt: DateTime! @updatedAt # read-only (managed by prisma)
+}
+
+type Card {
+  id: ID! @id
+  name: String!
+  description: String @default(value: "")
+
+  #createdBy: User @createdAt
+  updatedBy: User
+
+  # Optional system fields, used for tracking changes
+  createdAt: DateTime! @createdAt # read-only (managed by prisma)
+  updatedAt: DateTime! @updatedAt # read-only (managed by prisma)
+}
+
+type User {
+  id: ID! @id
+  email: String! @unique
+  password: String!
+  name: String!
+  avatarUrl: String @default(value:"")
+  boards: [Board!]!
+}
