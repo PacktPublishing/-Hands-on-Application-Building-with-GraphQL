@@ -1,9 +1,8 @@
-service: CoolBoardDB
-stage: dev
+endpoint: http://localhost:4466
 
-datamodel: datamodel.graphql
+datamodel: datamodel.prisma
 
-# to enable auth, provide
-# secret: my-secret
-disableAuth: true
-cluster: local
+generate:
+  - generator: graphql-schema
+    output: schema.graphql
+
