@@ -10,7 +10,6 @@ import {
 
 import { Link } from 'react-router-dom';
 
-import { FullVerticalContainer } from './FullVerticalContainer';
 import { CreateBoardModal } from './CreateBoardModal';
 
 const BoardListItem = ({ name, id, deleteBoard }) => {
@@ -84,7 +83,7 @@ export default class Boards extends Component {
     `;
 
     return (
-      <FullVerticalContainer>
+      <>
         <h1>List of Boards </h1>
 
         <Query query={userWithBoardsQuery}>
@@ -131,7 +130,7 @@ export default class Boards extends Component {
             );
           }}
         </Mutation>
-      </FullVerticalContainer>
+      </>
     );
   }
 }
