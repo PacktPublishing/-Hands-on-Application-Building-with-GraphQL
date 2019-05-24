@@ -16,10 +16,4 @@ module.exports = {
   },
   Subscription,
   AuthPayload,
-  // https://github.com/prisma/prisma/issues/2225#issuecomment-413265367
-  Node: {
-    __resolveType(obj, ctx, info) {
-      return obj.__typename;
-    },
-  },
 };
