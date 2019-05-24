@@ -10,7 +10,6 @@
     "apollo-link-schema": "^1.0.3",
     "apollo-link-ws": "^1.0.5",
     "apollo-utilities": "1.0.11",
-    "create-react-app": "^1.5.2",
     "graphql": "^0.13.0",
     "graphql-tag": "^2.6.1",
     "graphql-tools": "^2.21.0",
@@ -36,12 +35,18 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "babel-eslint": "^8.2.1",
-    "eslint": "^4.17.0",
+    "babel-eslint": "9.0.0",
+    "eslint": "5.12.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-config-react-app": "^2.1.0",
+    "eslint-config-react-app": "3.0.8",
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.6.1",
     "prettier": "^1.10.2"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie < 11",
+    "not op_mini all"
+  ]
 }

@@ -15,7 +15,7 @@ import { CoolBoard } from './components/CoolBoard';
 function createClient() {
   return new ApolloClient({
     link: createHttpLink({
-      uri: 'http://localhost:4466/CoolBoardDB/dev',
+      uri: 'http://localhost:4466',
     }),
     cache: new InMemoryCache(),
   });
