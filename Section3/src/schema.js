@@ -1,7 +1,10 @@
-import { addMockFunctionsToSchema } from 'graphql-tools';
-//import { MockList } from 'graphql-tools';
+import {
+  addMockFunctionsToSchema,
+  makeExecutableSchema,
+} from 'graphql-tools';
 
-import { makeExecutableSchema } from 'graphql-tools';
+// eslint-disable-next-line no-unused-vars
+import { MockList } from 'graphql-tools';
 
 // a schema
 const typeDefs = `
