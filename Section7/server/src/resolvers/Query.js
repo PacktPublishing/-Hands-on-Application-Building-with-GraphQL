@@ -1,17 +1,17 @@
 const { getUserId } = require('../utils');
 
 const Query = {
-  board(parent, { id }, ctx, info) {
+  board(parent, { where }, ctx, info) {
     getUserId(ctx);
-    return ctx.db.query.board({ where: { id } }, info);
+    return ctx.db.query.board({ where }, info);
   },
 
-  list(parent, { id }, ctx, info) {
+  list(parent, { where }, ctx, info) {
     getUserId(ctx);
-    return ctx.db.query.list({ where: { id } }, info);
-  },
+      return ctx.db.query.list({ where }, info);
+    },
 
-  me(parent, args, ctx, info) {
+  me(parent, { where }, ctx, info) {
     const id = getUserId(ctx);
     return ctx.db.query.user({ where: { id } }, info);
   },
