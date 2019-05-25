@@ -1,20 +1,20 @@
 type Board {
-  id: ID! @unique
+  id: ID! @id
   lists: [List!]!
   name: String!
 }
 type List {
   cards: [Card!]!
-  id: ID! @unique
+  id: ID! @id
   name: String!
 }
 type Card {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   description: String @default(value: "")
 }
 type User {
-  id: ID! @unique
+  id: ID! @id
   email: String! @unique
   password: String!
   name: String!

@@ -1,18 +1,25 @@
-# the name for the service (will be part of the service's HTTP endpoint)
-service: coolboardsecure
-
-# the cluster and stage the service is deployed to
-stage: ${env:PRISMA_STAGE}
+# A new property called endpoint has been added. The new endpoint effectively encodes the information of the three removed properties.
+#endpoint: ${env:PRISMA_ENDPOINT}
+endpoint: http://localhost:4466/
 
 # to disable authentication:
 # disableAuth: true
-secret: ${env:PRISMA_SECRET}
+#secret: ${env:PRISMA_MANAGEMENT_API_SECRET}
 
 # the file path pointing to your data model
-datamodel: datamodel.graphql
+datamodel: datamodel.prisma
 
 # seed your service with initial data based on seed.graphql
 seed:
   import: seed.graphql
 
-cluster: ${env:PRISMA_CLUSTER}
+# automatically run by prisma deploy:
+generate:
+  - generator: graphql-schema
+    output: "../src/generated/prisma.graphql"
+
+hooks:
+  post-deploy:
+    - echo "Deployment finished."
+    - echo run prisma generate
+    - prisma generate
