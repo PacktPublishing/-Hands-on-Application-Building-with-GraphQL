@@ -12,8 +12,7 @@ import {
   Popup,
 } from 'semantic-ui-react';
 
-import Card from './Card';
-import { ItemTypes } from './Constants';
+import Card, { dndItemType } from './Card';
 
 class CardListWithoutDnd extends React.Component {
   render() {
@@ -81,12 +80,6 @@ class CardListWithoutDnd extends React.Component {
 
 const dropTarget = {
   drop(props, monitor, component) {
-    console.log(
-      'dropped: ',
-      props,
-      monitor,
-      component
-    );
     let cardItem = monitor.getItem();
     const cardId = cardItem.id;
     const cardListId = props.id;
@@ -143,7 +136,7 @@ export const CardList = graphql(
   `,
   queryOptions
 )(
-  DropTarget(ItemTypes.CARD, dropTarget, collect)(
+  DropTarget(dndItemType, dropTarget, collect)(
     CardListWithoutDnd
   )
 );

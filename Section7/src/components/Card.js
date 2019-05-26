@@ -17,7 +17,6 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { compose } from 'react-apollo';
 
-import { ItemTypes } from './Constants';
 import { DragSource } from 'react-dnd';
 
 const CardDiv = styled.div`
@@ -365,8 +364,10 @@ const collect = (connect, monitor) => ({
   isDragging: monitor.isDragging(),
 });
 
+export const dndItemType = 'card';
+
 export default DragSource(
-  ItemTypes.CARD,
+  dndItemType,
   cardSource,
   collect
 )(CardForDragging);

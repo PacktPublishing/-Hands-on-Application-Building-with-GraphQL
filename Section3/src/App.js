@@ -80,6 +80,7 @@ function createClient() {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function createClientMock() {
   return new ApolloClient({
     link: new SchemaLink({ schema }),
@@ -91,7 +92,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <ApolloProvider client={createClient()}>
+        <ApolloProvider client={
+          createClient()
+          // or:
+          // createClientMock()
+        }>
           <CoolBoard boardId="cjc10rgoj721s0147ui3wzapk" />
         </ApolloProvider>
       </div>

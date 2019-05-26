@@ -18,12 +18,12 @@ import { CoolBoard } from './components/CoolBoard';
 
 // Create a Http link
 let httpLink = createHttpLink({
-  uri: 'http://localhost:4466/CoolBoardDB/dev',
+  uri: 'http://localhost:4466/',
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:4466/CoolBoardDB/dev`,
+  uri: `ws://localhost:4466/`,
   options: {
     reconnect: true,
   },

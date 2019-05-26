@@ -26,11 +26,11 @@ import './App.css';
 
 import { CoolBoard } from './components/CoolBoard';
 import Boards from './components/Boards';
-import LoginForm from './components/LoginForm';
-import SignupForm from './components/SignupForm';
-import { FullVerticalContainer } from './components/FullVerticalContainer';
-import { ProfileHeader } from './components/ProfileHeader';
-import { GeneralErrorHandler } from './components/GeneralErrorHandler';
+import LoginForm from './authentication/LoginForm';
+import SignupForm from './authentication/SignupForm';
+import { FullVerticalContainer } from './common/FullVerticalContainer';
+import { ProfileHeader } from './common/ProfileHeader';
+import { GeneralErrorHandler } from './common/GeneralErrorHandler';
 
 // Create a Http link
 let httpLink = createHttpLink({
