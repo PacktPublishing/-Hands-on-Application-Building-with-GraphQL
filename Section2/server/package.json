@@ -13,7 +13,7 @@
   "private": true,
   "devDependencies": {},
   "dependencies": {
-    "apollo-server-express": "2.5.0",
+    "apollo-server-express": "2.14.2",
     "babel-cli": "6.26.0",
     "babel-plugin-transform-async-generator-functions": "6.24.1",
     "babel-plugin-transform-object-rest-spread": "6.26.0",
