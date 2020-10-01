@@ -1,10 +1,10 @@
-**Note:** 📣 After one year there are some important❗️ and cool 😎 updates, like e.g. 
+**Note:** 📣 After more than 2 years there are some important❗️ and cool 😎 updates, like e.g. 
 * React Hooks ⚛️
 * simpler, functional React components
 * Apollo Client 3
 * more 🎁 to come... 🚀
 
-**➔ Just head over to the *latest* version at [lowsky/-Hands-on-Application-Building-with-GraphQL](https://github.com/lowsky/-Hands-on-Application-Building-with-GraphQL**
+**➔ Just head over to the *latest* version at [lowsky/-Hands-on-Application-Building-with-GraphQL](https://github.com/lowsky/-Hands-on-Application-Building-with-GraphQL)**
 
 # Hands-on Application Building with GraphQL [Video]
 This is the code repository for [Hands-on Application Building with GraphQL [Video]](https://www.packtpub.com/web-development/hands-application-building-graphql-video?utm_source=github&utm_medium=repository&utm_campaign=9781788991865), published by [Packt](https://www.packtpub.com/?utm_source=github). It contains all the supporting project files necessary to work through the video course from start to finish.
