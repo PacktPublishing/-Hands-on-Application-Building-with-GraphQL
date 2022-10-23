@@ -1,4 +1,4 @@
-**Note:** 📣 After more than 2 years there are some important❗️ and cool 😎 updates, like e.g. 
+**Note:** 📣 After more than 4 years there are some important❗️ and cool 😎 updates, like e.g. 
 * React Hooks ⚛️
 * simpler, functional React components
 * Apollo Client 3
@@ -7,7 +7,7 @@
 **➔ Just head over to the *latest* version at [lowsky/-Hands-on-Application-Building-with-GraphQL](https://github.com/lowsky/-Hands-on-Application-Building-with-GraphQL)**
 
 # Hands-on Application Building with GraphQL [Video]
-This is the code repository for [Hands-on Application Building with GraphQL [Video]](https://www.packtpub.com/web-development/hands-application-building-graphql-video?utm_source=github&utm_medium=repository&utm_campaign=9781788991865), published by [Packt](https://www.packtpub.com/?utm_source=github). It contains all the supporting project files necessary to work through the video course from start to finish.
+This is the code repository for [Hands-on Application Building with GraphQL [Video]](https://www.packtpub.com/product/hands-on-application-building-with-graphql-video/9781788991865?utm_source=github&utm_medium=repository&utm_campaign=9781788991865), published by [Packt](https://www.packtpub.com/?utm_source=github). It contains all the supporting project files necessary to work through the video course from start to finish.
 
 ## About the Video Course
 > GraphQL is a data-fetching API developed by Facebook, which has been using it for five years; it powers millions of devices and most components of the Facebook and Instagram website. In this course, you will get an introduction into GraphQL as a bridge for React client application to communicate with servers as the missing data-fetching or query language.
@@ -44,10 +44,10 @@ This course has the following software requirements:<br/>
 ## Related Products
 
 **Code Repository** for 
-[Hands-on Application Building with GraphQL](https://www.packtpub.com/web-development/hands-application-building-graphql-video), Published by [Packt](https://www.packtpub.com/)
+[Hands-on Application Building with GraphQL](https://www.packtpub.com/product/hands-on-application-building-with-graphql-video/9781788991865), Published by [Packt](https://www.packtpub.com/)
 
 **Author**: Robert Hostlowsky (robert.hostlowsky) [on twitter: @rhosts](https://www.twitter.com/rhosts) 
 
-There is this **live demo** available at [https://coolboard.netlify.com/](https://www.coolboard.fun/)
+There is this **live demo** available at [https://www.coolboard.fun/](https://www.coolboard.fun/)
 
 ![https://www.coolboard.fun/screenshot.png](https://www.coolboard.fun/screenshot.png)
