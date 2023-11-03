@@ -46,7 +46,7 @@ This course has the following software requirements:<br/>
 **Code Repository** for 
 [Hands-on Application Building with GraphQL](https://www.packtpub.com/product/hands-on-application-building-with-graphql-video/9781788991865), Published by [Packt](https://www.packtpub.com/)
 
-**Author**: Robert Hostlowsky (robert.hostlowsky) [on twitter: @rhosts](https://www.twitter.com/rhosts) 
+**Author**: Robert Hostlowsky (robert.hostlowsky) [on fediverse: @lowsky](https://mastodontech.de/@lowsky)
 
 There is this **live demo** available at [https://www.coolboard.fun/](https://www.coolboard.fun/)
 
